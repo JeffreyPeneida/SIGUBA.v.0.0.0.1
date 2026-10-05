@@ -1,0 +1,301 @@
+<div class="space-y-5">
+
+  <header class="flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <h1 class="flex items-center gap-2.5 text-2xl font-extrabold tracking-tight text-[var(--text)]">
+        <i class="fa-solid fa-layer-group text-[var(--primary)]"></i>
+        Catálogos
+      </h1>
+      <p class="text-sm text-[var(--muted)]">
+        Listas que alimentan los desplegables de los formularios
+      </p>
+    </div>
+
+    @if (puedeCrear() && seleccionado()) {
+      <button type="button" (click)="abrirCrear()"
+        class="flex h-11 items-center gap-2 rounded-xl bg-[var(--primary)] px-5 text-sm font-bold text-white
+               transition hover:bg-[var(--primary-dark)]">
+        <i class="fa-solid fa-plus"></i>
+        Nuevo registro
+      </button>
+    }
+  </header>
+
+  <div class="grid gap-5 lg:grid-cols-[16rem_1fr]">
+
+    <!-- Qué catálogo se está editando -->
+    <nav class="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-2">
+      <ul class="space-y-0.5">
+        @for (d of definiciones(); track d.clave) {
+          <li>
+            <button type="button" (click)="elegir(d)"
+              class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium transition"
+              [class]="seleccionado()?.clave === d.clave
+                        ? 'bg-[var(--primary-soft)] text-[var(--primary)]'
+                        : 'text-[var(--muted)] hover:bg-[var(--surface-muted)] hover:text-[var(--text)]'">
+              <i class="fa-solid {{ iconoCatalogo(d.clave) }} w-4 text-center text-xs"></i>
+              <span class="min-w-0 flex-1 truncate">{{ d.etiqueta }}</span>
+              @if (d.clavePadre) {
+                <i class="fa-solid fa-diagram-project text-[10px] opacity-50"
+                   [title]="'Depende de ' + d.etiquetaPadre"></i>
+              }
+            </button>
+          </li>
+        }
+      </ul>
+    </nav>
+
+    <!-- Contenido del catálogo -->
+    <div class="min-w-0 space-y-4">
+
+      @if (seleccionado(); as d) {
+
+        <!-- Filtros -->
+        <div class="flex flex-wrap items-center gap-3 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
+
+          <div class="relative min-w-[200px] flex-1">
+            <i class="fa-solid fa-magnifying-glass icono-campo"></i>
+            <input type="search" [value]="filtro()" (input)="buscar($any($event.target).value)"
+              [placeholder]="'Buscar en ' + d.etiqueta.toLowerCase()"
+              class="entrada con-icono !h-11" />
+          </div>
+
+          @if (d.clavePadre) {
+            <app-select-buscador class="!w-auto min-w-[240px]" clase="entrada !h-11"
+              [opciones]="padres()" [seleccion]="filtroPadre() ?? ''"
+              [placeholder]="'Todas las ' + (d.etiquetaPadre?.toLowerCase() ?? '')"
+              [opcionVacia]="'Todas las ' + (d.etiquetaPadre?.toLowerCase() ?? '')"
+              (cambio)="filtrarPorPadre($event)">
+            </app-select-buscador>
+          }
+
+          <button type="button" (click)="cargar()" title="Recargar"
+            class="flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--border)]
+                   text-[var(--muted)] transition hover:border-[var(--primary)] hover:text-[var(--primary)]">
+            <i class="fa-solid fa-rotate" [class.fa-spin]="cargando()"></i>
+          </button>
+        </div>
+
+        <!-- Tabla -->
+        <div class="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
+
+          @if (cargando()) {
+            <div class="p-12 text-center text-[var(--muted)]">
+              <i class="fa-solid fa-circle-notch fa-spin text-2xl"></i>
+              <p class="mt-3 text-sm">Cargando…</p>
+            </div>
+
+          } @else if (visibles().length === 0) {
+            <div class="p-12 text-center">
+              <i class="fa-solid {{ iconoCatalogo(d.clave) }} text-3xl text-slate-300"></i>
+              <p class="mt-3 text-sm font-semibold text-[var(--text)]">
+                {{ items().length === 0 ? d.etiqueta + ' está vacío' : 'Nada coincide' }}
+              </p>
+              <p class="mx-auto mt-1 max-w-sm text-sm text-[var(--muted)]">
+                @if (items().length === 0) {
+                  Los formularios que usan este catálogo mostrarán el desplegable vacío
+                  hasta que agregues registros.
+                } @else {
+                  Prueba con otro texto.
+                }
+              </p>
+            </div>
+
+          } @else {
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm">
+                <thead class="bg-[var(--surface-muted)] text-xs uppercase tracking-wider text-[var(--muted)]">
+                  <tr>
+                    <th scope="col" class="px-5 py-3 font-semibold">Nombre</th>
+                    @if (d.clavePadre) {
+                      <th scope="col" class="px-5 py-3 font-semibold">{{ d.etiquetaPadre }}</th>
+                    }
+                    @if (d.tieneDescripcion) {
+                      <th scope="col" class="px-5 py-3 font-semibold">Descripción</th>
+                    }
+                    <th scope="col" class="px-5 py-3 text-right font-semibold">Acciones</th>
+                  </tr>
+                </thead>
+
+                <tbody class="divide-y divide-[var(--surface-line)]">
+                  @for (item of filasPagina(); track item.id) {
+                    <tr class="transition hover:bg-[var(--surface-muted)]">
+                      <td class="px-5 py-3 font-medium text-[var(--text)]">{{ item.nombre }}</td>
+
+                      @if (d.clavePadre) {
+                        <td class="px-5 py-3 text-[var(--muted)]">{{ item.nombrePadre || '—' }}</td>
+                      }
+
+                      @if (d.tieneDescripcion) {
+                        <td class="max-w-[280px] px-5 py-3 text-[var(--muted)]">
+                          <span class="line-clamp-2">{{ item.descripcion || '—' }}</span>
+                        </td>
+                      }
+
+                      <td class="px-5 py-3">
+                        <div class="flex justify-end gap-1">
+                          @if (puedeEditar()) {
+                            <button type="button" (click)="abrirEditar(item)" title="Editar"
+                              class="flex h-9 w-9 items-center justify-center rounded-lg text-[var(--muted)]
+                                     transition hover:bg-[var(--primary-soft)] hover:text-[var(--primary)]">
+                              <i class="fa-solid fa-pen"></i>
+                            </button>
+                          }
+
+                          @if (puedeEliminar()) {
+                            <button type="button" (click)="borrar(item)" title="Eliminar"
+                              class="flex h-9 w-9 items-center justify-center rounded-lg text-[var(--muted)]
+                                     transition hover:bg-[var(--danger-soft)] hover:text-[var(--danger)]">
+                              <i class="fa-solid fa-trash"></i>
+                            </button>
+                          }
+                        </div>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Paginacion -->
+            <div class="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--surface-line)] px-5 py-3">
+              <p class="text-xs text-[var(--muted)]">
+                Mostrando <b class="text-[var(--text)]">{{ desde() }}–{{ hasta() }}</b>
+                de <b class="text-[var(--text)]">{{ visibles().length }}</b>
+                @if (visibles().length !== items().length) {
+                  <span>(filtrados de {{ items().length }})</span>
+                }
+              </p>
+
+              @if (totalPaginas() > 1) {
+                <nav class="flex items-center gap-1" aria-label="Paginación">
+                  <button type="button" (click)="irAPagina(1)" [disabled]="pagina() === 1"
+                    title="Primera página" aria-label="Primera página"
+                    class="flex h-9 w-9 items-center justify-center rounded-lg text-[var(--muted)] transition
+                           hover:bg-[var(--surface-muted)] hover:text-[var(--text)] disabled:pointer-events-none disabled:opacity-40">
+                    <i class="fa-solid fa-angles-left text-xs"></i>
+                  </button>
+                  <button type="button" (click)="irAPagina(pagina() - 1)" [disabled]="pagina() === 1"
+                    title="Página anterior" aria-label="Página anterior"
+                    class="flex h-9 w-9 items-center justify-center rounded-lg text-[var(--muted)] transition
+                           hover:bg-[var(--surface-muted)] hover:text-[var(--text)] disabled:pointer-events-none disabled:opacity-40">
+                    <i class="fa-solid fa-angle-left text-xs"></i>
+                  </button>
+
+                  @for (n of numerosPagina(); track $index) {
+                    @if (n === null) {
+                      <span class="w-6 text-center text-xs text-[var(--muted)]">…</span>
+                    } @else {
+                      <button type="button" (click)="irAPagina(n)"
+                        [attr.aria-current]="n === pagina() ? 'page' : null"
+                        class="h-9 min-w-9 rounded-lg px-2 text-sm font-semibold transition"
+                        [class]="n === pagina()
+                                  ? 'bg-[var(--primary)] text-white shadow-sm'
+                                  : 'text-[var(--muted)] hover:bg-[var(--surface-muted)] hover:text-[var(--text)]'">
+                        {{ n }}
+                      </button>
+                    }
+                  }
+
+                  <button type="button" (click)="irAPagina(pagina() + 1)" [disabled]="pagina() === totalPaginas()"
+                    title="Página siguiente" aria-label="Página siguiente"
+                    class="flex h-9 w-9 items-center justify-center rounded-lg text-[var(--muted)] transition
+                           hover:bg-[var(--surface-muted)] hover:text-[var(--text)] disabled:pointer-events-none disabled:opacity-40">
+                    <i class="fa-solid fa-angle-right text-xs"></i>
+                  </button>
+                  <button type="button" (click)="irAPagina(totalPaginas())" [disabled]="pagina() === totalPaginas()"
+                    title="Última página" aria-label="Última página"
+                    class="flex h-9 w-9 items-center justify-center rounded-lg text-[var(--muted)] transition
+                           hover:bg-[var(--surface-muted)] hover:text-[var(--text)] disabled:pointer-events-none disabled:opacity-40">
+                    <i class="fa-solid fa-angles-right text-xs"></i>
+                  </button>
+                </nav>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+<!-- ===================================================================== -->
+<!-- Alta y edición                                                         -->
+<!-- ===================================================================== -->
+@if (panelAbierto() && seleccionado(); as d) {
+  <div class="fixed inset-0 z-50 flex justify-end">
+
+    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" (click)="panelAbierto.set(false)" aria-hidden="true"></div>
+
+    <div role="dialog" aria-modal="true"
+      class="relative flex h-full w-full max-w-md flex-col overflow-y-auto bg-[var(--surface)] shadow-2xl">
+
+      <header class="flex items-center justify-between border-b border-[var(--surface-line)] px-6 py-5">
+        <div class="min-w-0">
+          <h2 class="flex items-center gap-2 text-lg font-extrabold text-[var(--text)]">
+            <i class="fa-solid" [class.fa-plus]="modo() === 'crear'" [class.fa-pen]="modo() === 'editar'"></i>
+            {{ modo() === 'crear' ? 'Nuevo registro' : 'Editar registro' }}
+          </h2>
+          <p class="truncate text-xs text-[var(--muted)]">{{ d.etiqueta }}</p>
+        </div>
+
+        <button type="button" (click)="panelAbierto.set(false)" aria-label="Cerrar"
+          class="flex h-9 w-9 items-center justify-center rounded-lg text-[var(--muted)] transition hover:bg-slate-100">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </header>
+
+      <form [formGroup]="formulario" (ngSubmit)="guardar()" novalidate class="flex flex-1 flex-col">
+
+        <div class="flex-1 space-y-4 px-6 py-5">
+
+          <app-campo etiqueta="Nombre" icono="fa-tag" [control]="campo('nombre')">
+            <i class="fa-solid fa-tag icono-campo"></i>
+            <input formControlName="nombre" type="text" placeholder="Nombre visible en el formulario"
+              class="entrada con-icono" />
+          </app-campo>
+
+          @if (d.clavePadre) {
+            <app-campo [etiqueta]="d.etiquetaPadre ?? 'Depende de'" icono="fa-diagram-project"
+              [control]="campo('idPadre')"
+              [ayuda]="'Cada registro pertenece a ' + (d.etiquetaPadre ?? '').toLowerCase()">
+              <i class="fa-solid fa-diagram-project icono-campo"></i>
+              <app-select-buscador formControlName="idPadre" clase="entrada con-icono"
+                [opciones]="padres()" [valorVacio]="null"
+                placeholder="Selecciona…" opcionVacia="Selecciona…">
+              </app-select-buscador>
+            </app-campo>
+          }
+
+          @if (d.tieneDescripcion) {
+            <app-campo etiqueta="Descripción" icono="fa-align-left" [opcional]="true"
+              ayuda="Se muestra al técnico como guía al clasificar">
+              <textarea formControlName="descripcion" rows="4"
+                placeholder="Explica cuándo aplica este nivel" class="entrada"></textarea>
+            </app-campo>
+          }
+        </div>
+
+        <footer class="flex gap-3 border-t border-[var(--surface-line)] px-6 py-4">
+          <button type="button" (click)="panelAbierto.set(false)"
+            class="flex h-11 flex-1 items-center justify-center gap-2 rounded-xl border border-[var(--border)]
+                   text-sm font-semibold text-[var(--text)] transition hover:border-[var(--primary)]">
+            <i class="fa-solid fa-xmark"></i>
+            Cancelar
+          </button>
+
+          <button type="submit" [disabled]="guardando()"
+            class="flex h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-[var(--primary)]
+                   text-sm font-bold text-white transition hover:bg-[var(--primary-dark)]
+                   disabled:cursor-not-allowed disabled:opacity-60">
+            @if (guardando()) {
+              <i class="fa-solid fa-circle-notch fa-spin"></i> Guardando…
+            } @else {
+              <i class="fa-solid fa-floppy-disk"></i> Guardar
+            }
+          </button>
+        </footer>
+      </form>
+    </div>
+  </div>
+}

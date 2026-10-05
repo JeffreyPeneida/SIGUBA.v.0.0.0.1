@@ -1,0 +1,628 @@
+<div class="space-y-5">
+  <!-- Encabezado -->
+  <header class="flex flex-wrap items-start justify-between gap-4">
+    <div class="flex items-start gap-4">
+      <button
+        type="button"
+        (click)="volver()"
+        aria-label="Volver"
+        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] transition hover:border-[var(--primary)] hover:text-[var(--primary)]"
+      >
+        <i class="fa-solid fa-arrow-left"></i>
+      </button>
+
+      <div class="min-w-0">
+        <h1
+          class="flex items-center gap-2.5 text-2xl font-extrabold tracking-tight text-[var(--text)]"
+        >
+          <i class="fa-solid fa-file-signature text-[var(--primary)]"></i>
+          Informe de inspección
+        </h1>
+        <p class="text-sm text-[var(--muted)]">
+          Trámite {{ informe()?.codigoTramite || '#' + (informe()?.idCodigoInterno ?? '') }}
+          @if (informe(); as inf) {
+            ·
+            @if (inf.guardado) {
+              guardado {{ inf.fechaActualizacion | date: 'dd/MM/yyyy HH:mm' }}
+              @if (inf.actualizadoPor) {
+                por {{ inf.actualizadoPor }}
+              }
+            } @else {
+              <span class="font-semibold text-amber-700">borrador con los datos del trámite</span>
+            }
+          }
+        </p>
+      </div>
+    </div>
+
+    @if (informe()) {
+      <div class="flex flex-wrap gap-2">
+        <button
+          type="button"
+          (click)="descargar('word')"
+          [disabled]="descargando() !== null || guardando()"
+          class="flex h-11 items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 text-sm font-semibold text-[var(--text)] transition hover:border-sky-500 hover:text-sky-700 disabled:opacity-60"
+        >
+          <i
+            class="fa-solid"
+            [class]="
+              descargando() === 'word' ? 'fa-circle-notch fa-spin' : 'fa-file-word text-sky-600'
+            "
+          ></i>
+          Word
+        </button>
+
+        <button
+          type="button"
+          (click)="descargar('pdf')"
+          [disabled]="descargando() !== null || guardando()"
+          class="flex h-11 items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 text-sm font-semibold text-[var(--text)] transition hover:border-red-500 hover:text-red-700 disabled:opacity-60"
+        >
+          <i
+            class="fa-solid"
+            [class]="
+              descargando() === 'pdf' ? 'fa-circle-notch fa-spin' : 'fa-file-pdf text-red-600'
+            "
+          ></i>
+          PDF
+        </button>
+      </div>
+    }
+  </header>
+
+  @if (cargando()) {
+    <div class="tarjeta p-12 text-center text-[var(--muted)]">
+      <i class="fa-solid fa-circle-notch fa-spin text-2xl"></i>
+      <p class="mt-3 text-sm">Cargando el informe…</p>
+    </div>
+  } @else if (!informe()) {
+    <div class="tarjeta p-12 text-center">
+      <i class="fa-solid fa-file-circle-question text-3xl text-slate-300"></i>
+      <p class="mt-3 text-sm font-semibold text-[var(--text)]">No se pudo abrir el informe</p>
+    </div>
+  } @else if (informe(); as inf) {
+    @if (!puedeEditar()) {
+      <p
+        class="rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] px-4 py-3 text-sm text-[var(--muted)]"
+      >
+        <i class="fa-solid fa-lock mr-1.5"></i>
+        Solo consulta: puedes descargar el informe, pero no modificarlo.
+      </p>
+    }
+
+    <fieldset [disabled]="!puedeEditar()" class="space-y-5" (input)="cambio()" (change)="cambio()">
+      <!-- 1. Antecedentes -->
+      <section class="tarjeta">
+        <h2 class="titulo-seccion"><span class="numero">1</span> Antecedentes</h2>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+          <label>
+            <span class="etiqueta">Documento atendido</span>
+            <input
+              class="campo"
+              [(ngModel)]="inf.documentoAtendido"
+              name="documentoAtendido"
+              placeholder="Plan de Manejo Integrado de Plagas"
+            />
+          </label>
+          <label>
+            <span class="etiqueta">Tipo de inspección</span>
+            <input
+              class="campo"
+              [(ngModel)]="inf.tipoInspeccion"
+              name="tipoInspeccion"
+              placeholder="Diagnóstico de situación, inspección preventiva"
+            />
+          </label>
+          <label>
+            <span class="etiqueta">Fecha y hora</span>
+            <input
+              class="campo"
+              type="datetime-local"
+              [(ngModel)]="inf.fechaInspeccion"
+              name="fechaInspeccion"
+            />
+          </label>
+          <label>
+            <span class="etiqueta">Plagas</span>
+            <input
+              class="campo"
+              [(ngModel)]="inf.plagas"
+              name="plagas"
+              placeholder="Roedores, Cucarachas"
+            />
+          </label>
+          <label>
+            <span class="etiqueta">Nivel</span>
+            <input
+              class="campo"
+              [(ngModel)]="inf.nivel"
+              name="nivel"
+              list="niveles"
+              placeholder="BAJO, MEDIO o ALTO"
+            />
+            <datalist id="niveles">
+              <option value="BAJO"></option>
+              <option value="MEDIO"></option>
+              <option value="ALTO"></option>
+            </datalist>
+          </label>
+          <label>
+            <span class="etiqueta">Asunto</span>
+            <input class="campo" [(ngModel)]="inf.asunto" name="asunto" />
+          </label>
+        </div>
+      </section>
+
+      <!-- 2. Información general del lugar -->
+      <section class="tarjeta">
+        <h2 class="titulo-seccion"><span class="numero">2</span> Información general del lugar</h2>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+          <label class="sm:col-span-2">
+            <span class="etiqueta">Dirección inspeccionada</span>
+            <input class="campo" [(ngModel)]="inf.direccion" name="direccion" />
+          </label>
+          <label>
+            <span class="etiqueta">Sector / Barrio</span>
+            <input class="campo" [(ngModel)]="inf.sectorBarrio" name="sectorBarrio" />
+          </label>
+          <label>
+            <span class="etiqueta">Administración zonal</span>
+            <input class="campo" [(ngModel)]="inf.adminZonal" name="adminZonal" />
+          </label>
+          <label>
+            <span class="etiqueta">Tipo de lugar</span>
+            <input
+              class="campo"
+              [(ngModel)]="inf.tipoLugar"
+              name="tipoLugar"
+              placeholder="Vía pública, plaza, mercado…"
+            />
+          </label>
+          <label>
+            <span class="etiqueta">Coordenadas GPS</span>
+            <input class="campo" [(ngModel)]="inf.coordenadas" name="coordenadas" />
+          </label>
+          <label class="sm:col-span-2">
+            <span class="etiqueta">Áreas supervisadas</span>
+            <input
+              class="campo"
+              [(ngModel)]="inf.areasSupervisadas"
+              name="areasSupervisadas"
+              placeholder="Aceras, parterre, sumideros, alcantarillas, espacios verdes"
+            />
+          </label>
+          <label>
+            <span class="etiqueta">N.º de beneficiarios</span>
+            <input class="campo" [(ngModel)]="inf.beneficiarios" name="beneficiarios" />
+          </label>
+          <label>
+            <span class="etiqueta">Persona contactada</span>
+            <input class="campo" [(ngModel)]="inf.personaContactada" name="personaContactada" />
+          </label>
+        </div>
+
+        <h3 class="mb-3 mt-6 text-sm font-bold text-[var(--text)]">
+          Personas que participan en la inspección
+        </h3>
+
+        <div class="space-y-2">
+          @for (p of inf.participantes; track $index; let i = $index) {
+            <div class="flex flex-wrap items-center gap-2 sm:flex-nowrap">
+              <input
+                class="campo sm:flex-[4]"
+                [(ngModel)]="p.nombre"
+                [name]="'pNombre' + i"
+                placeholder="Nombre"
+                aria-label="Nombre"
+              />
+              <input
+                class="campo sm:flex-[3]"
+                [(ngModel)]="p.cargo"
+                [name]="'pCargo' + i"
+                placeholder="Cargo"
+                aria-label="Cargo"
+              />
+              <input
+                class="campo sm:flex-[2]"
+                [(ngModel)]="p.institucion"
+                [name]="'pInst' + i"
+                placeholder="Institución"
+                aria-label="Institución"
+              />
+              <button
+                type="button"
+                class="boton-icono solo-edicion"
+                (click)="quitar(inf.participantes, i)"
+                title="Quitar"
+              >
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+          }
+        </div>
+        <button type="button" class="boton-agregar mt-3" (click)="agregarParticipante()">
+          <i class="fa-solid fa-plus"></i> Agregar persona
+        </button>
+      </section>
+
+      <!-- 3. Detalle de la inspección -->
+      <section class="tarjeta">
+        <h2 class="titulo-seccion"><span class="numero">3</span> Detalle de la inspección</h2>
+
+        <div class="space-y-2">
+          @for (e of inf.detalleEspecies; track $index; let i = $index) {
+            <div class="flex flex-wrap items-center gap-2 sm:flex-nowrap">
+              <input
+                class="campo sm:flex-[2]"
+                [(ngModel)]="e.especie"
+                [name]="'eEsp' + i"
+                placeholder="Especie"
+                aria-label="Especie"
+              />
+              <input
+                class="campo sm:flex-[2]"
+                [(ngModel)]="e.nivel"
+                [name]="'eNivel' + i"
+                placeholder="Nivel de infestación"
+                aria-label="Nivel de infestación"
+              />
+              <input
+                class="campo sm:flex-[4]"
+                [(ngModel)]="e.indicios"
+                [name]="'eInd' + i"
+                placeholder="Indicios / observaciones"
+                aria-label="Indicios"
+              />
+              <button
+                type="button"
+                class="boton-icono solo-edicion"
+                (click)="quitar(inf.detalleEspecies, i)"
+                title="Quitar"
+              >
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+          }
+        </div>
+        <button type="button" class="boton-agregar mt-3" (click)="agregarEspecie()">
+          <i class="fa-solid fa-plus"></i> Agregar especie
+        </button>
+      </section>
+
+      <!-- 4. Diagnóstico -->
+      <section class="tarjeta">
+        <h2 class="titulo-seccion"><span class="numero">4</span> Diagnóstico de situación</h2>
+
+        <label class="block">
+          <span class="etiqueta">Factores de riesgo identificados</span>
+          <input class="campo" [(ngModel)]="inf.factoresRiesgo" name="factoresRiesgo" />
+        </label>
+        <div class="mt-2 flex flex-wrap gap-1.5">
+          @for (f of factoresSugeridos; track f) {
+            <button type="button" class="chip" (click)="agregarFactor(f)">+ {{ f }}</button>
+          }
+        </div>
+
+        <label class="mt-4 block">
+          <span class="etiqueta">Diagnóstico (un párrafo por línea)</span>
+          <textarea
+            class="campo"
+            rows="10"
+            [(ngModel)]="inf.diagnostico"
+            name="diagnostico"
+            placeholder="Lo constatado en el recorrido: condiciones ambientales, sanitarias y estructurales, indicios directos…"
+          ></textarea>
+        </label>
+      </section>
+
+      <!-- 5. Programa de actuación -->
+      <section class="tarjeta">
+        <h2 class="titulo-seccion"><span class="numero">5</span> Programa de actuación</h2>
+
+        <div class="mb-4 flex flex-wrap gap-4 text-sm font-semibold text-[var(--text)]">
+          <label class="flex items-center gap-2">
+            <input type="radio" name="tipoControl" value="ACTIVO" [(ngModel)]="inf.tipoControl" />
+            Control activo
+          </label>
+          <label class="flex items-center gap-2">
+            <input type="radio" name="tipoControl" value="PASIVO" [(ngModel)]="inf.tipoControl" />
+            Control pasivo
+          </label>
+        </div>
+
+        <textarea
+          class="campo"
+          rows="5"
+          [(ngModel)]="inf.programaActuacion"
+          name="programaActuacion"
+          aria-label="Programa de actuación"
+          placeholder="Acciones de control ejecutadas o, si no fue posible, por qué y qué se hizo en su lugar."
+        ></textarea>
+      </section>
+
+      <!-- 6. Conclusiones -->
+      <section class="tarjeta">
+        <h2 class="titulo-seccion"><span class="numero">6</span> Conclusiones</h2>
+        <textarea
+          class="campo"
+          rows="8"
+          [(ngModel)]="inf.conclusiones"
+          name="conclusiones"
+          aria-label="Conclusiones"
+        ></textarea>
+      </section>
+
+      <!-- 7. Recomendaciones -->
+      <section class="tarjeta">
+        <h2 class="titulo-seccion"><span class="numero">7</span> Recomendaciones</h2>
+        <p class="-mt-2 mb-4 text-xs text-[var(--muted)]">
+          Por entidad. Las entidades sin recomendaciones no aparecen en el documento.
+        </p>
+
+        <div class="space-y-4">
+          @for (g of inf.recomendaciones; track $index; let gi = $index) {
+            <div class="rounded-xl border border-[var(--border)] p-3 sm:p-4">
+              <div class="flex items-center gap-2">
+                <input
+                  class="campo font-bold"
+                  [(ngModel)]="g.entidad"
+                  [name]="'gEnt' + gi"
+                  list="entidades"
+                  aria-label="Entidad"
+                  placeholder="Entidad"
+                />
+                <button
+                  type="button"
+                  class="boton-icono neutro solo-edicion"
+                  (click)="mover(inf.recomendaciones, gi, -1)"
+                  [disabled]="gi === 0"
+                  title="Subir"
+                >
+                  <i class="fa-solid fa-arrow-up"></i>
+                </button>
+                <button
+                  type="button"
+                  class="boton-icono neutro solo-edicion"
+                  (click)="mover(inf.recomendaciones, gi, 1)"
+                  [disabled]="gi === inf.recomendaciones.length - 1"
+                  title="Bajar"
+                >
+                  <i class="fa-solid fa-arrow-down"></i>
+                </button>
+                <button
+                  type="button"
+                  class="boton-icono solo-edicion"
+                  (click)="quitar(inf.recomendaciones, gi)"
+                  title="Quitar entidad"
+                >
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </div>
+
+              <div class="mt-2 space-y-2 pl-2 sm:pl-4">
+                @for (item of g.items; track $index; let ii = $index) {
+                  <div class="flex items-start gap-2">
+                    <span class="mt-3 text-[var(--muted)]">•</span>
+                    <textarea
+                      class="campo"
+                      rows="2"
+                      [ngModel]="item"
+                      (ngModelChange)="g.items[ii] = $event"
+                      [name]="'gItem' + gi + '_' + ii"
+                      aria-label="Recomendación"
+                    ></textarea>
+                    <button
+                      type="button"
+                      class="boton-icono solo-edicion mt-1"
+                      (click)="quitar(g.items, ii)"
+                      title="Quitar"
+                    >
+                      <i class="fa-solid fa-xmark"></i>
+                    </button>
+                  </div>
+                }
+                <button type="button" class="boton-agregar" (click)="agregarItem(g.items)">
+                  <i class="fa-solid fa-plus"></i> Recomendación
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+
+        <datalist id="entidades">
+          @for (e of entidadesSugeridas; track e) {
+            <option [value]="e"></option>
+          }
+        </datalist>
+
+        <button type="button" class="boton-agregar mt-4" (click)="agregarGrupo()">
+          <i class="fa-solid fa-plus"></i> Agregar entidad
+        </button>
+      </section>
+
+      <!-- 8. Firmas -->
+      <section class="tarjeta">
+        <h2 class="titulo-seccion"><span class="numero">8</span> Firmas de responsabilidad</h2>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div class="space-y-3">
+            <p class="text-sm font-bold text-[var(--text)]">Elaborado por</p>
+            <input
+              class="campo"
+              [(ngModel)]="inf.elaboradoNombre"
+              name="elaboradoNombre"
+              placeholder="Nombre"
+              aria-label="Elaborado por: nombre"
+            />
+            <input
+              class="campo"
+              [(ngModel)]="inf.elaboradoCargo"
+              name="elaboradoCargo"
+              placeholder="Cargo"
+              aria-label="Elaborado por: cargo"
+            />
+          </div>
+          <div class="space-y-3">
+            <p class="text-sm font-bold text-[var(--text)]">Revisado y aprobado por</p>
+            <input
+              class="campo"
+              [(ngModel)]="inf.revisadoNombre"
+              name="revisadoNombre"
+              placeholder="Nombre"
+              aria-label="Revisado por: nombre"
+            />
+            <input
+              class="campo"
+              [(ngModel)]="inf.revisadoCargo"
+              name="revisadoCargo"
+              placeholder="Cargo"
+              aria-label="Revisado por: cargo"
+            />
+          </div>
+          <label>
+            <span class="etiqueta">Fecha de elaboración</span>
+            <input
+              class="campo"
+              type="date"
+              [(ngModel)]="inf.fechaElaboracion"
+              name="fechaElaboracion"
+            />
+          </label>
+        </div>
+        <p class="mt-3 text-xs text-[var(--muted)]">
+          El recuadro de firma queda en blanco para firmar a mano o electrónicamente (FirmaEC) sobre
+          el documento descargado.
+        </p>
+      </section>
+
+      <!-- 9. Anexo fotográfico -->
+      <section class="tarjeta">
+        <h2 class="titulo-seccion"><span class="numero">9</span> Anexo fotográfico</h2>
+
+        @if (inf.fotos.length === 0 && subiendo() === 0) {
+          <p class="mb-4 text-sm text-[var(--muted)]">
+            Sin fotos: el anexo no se incluye en el documento.
+          </p>
+        }
+
+        <div class="grid gap-4 sm:grid-cols-2">
+          @for (f of inf.fotos; track f.ruta; let i = $index) {
+            <figure class="overflow-hidden rounded-xl border border-[var(--border)]">
+              <div class="flex h-48 items-center justify-center bg-slate-100">
+                @if (f.url) {
+                  <img
+                    [src]="f.url"
+                    [alt]="'Fotografía ' + (i + 1)"
+                    class="max-h-full max-w-full object-contain"
+                  />
+                } @else {
+                  <i class="fa-solid fa-image text-3xl text-slate-300"></i>
+                }
+              </div>
+              <figcaption class="space-y-2 p-3">
+                <div class="flex items-center justify-between gap-2">
+                  <span class="text-xs font-extrabold text-[var(--text)]"
+                    >FOTOGRAFÍA N° {{ i + 1 }}</span
+                  >
+                  <span class="flex">
+                    <button
+                      type="button"
+                      class="boton-icono neutro solo-edicion"
+                      (click)="mover(inf.fotos, i, -1)"
+                      [disabled]="i === 0"
+                      title="Antes"
+                    >
+                      <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <button
+                      type="button"
+                      class="boton-icono neutro solo-edicion"
+                      (click)="mover(inf.fotos, i, 1)"
+                      [disabled]="i === inf.fotos.length - 1"
+                      title="Después"
+                    >
+                      <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                    <button
+                      type="button"
+                      class="boton-icono solo-edicion"
+                      (click)="quitar(inf.fotos, i)"
+                      title="Quitar del informe"
+                    >
+                      <i class="fa-solid fa-trash"></i>
+                    </button>
+                  </span>
+                </div>
+                <textarea
+                  class="campo"
+                  rows="2"
+                  [(ngModel)]="f.descripcion"
+                  [name]="'fDesc' + i"
+                  placeholder="Sitio de inspección: qué muestra la foto"
+                  aria-label="Pie de foto"
+                ></textarea>
+              </figcaption>
+            </figure>
+          }
+
+          @for (_ of subidasEnCurso(); track $index) {
+            <div
+              class="flex h-48 items-center justify-center rounded-xl border border-dashed border-[var(--border)] text-[var(--muted)]"
+            >
+              <i class="fa-solid fa-circle-notch fa-spin mr-2"></i> Subiendo…
+            </div>
+          }
+        </div>
+
+        @if (inf.fotos.length < maxFotos) {
+          <label class="boton-agregar mt-4 cursor-pointer">
+            <i class="fa-solid fa-camera"></i> Agregar fotos (JPG o PNG)
+            <input
+              type="file"
+              accept="image/jpeg,image/png"
+              multiple
+              class="hidden"
+              (change)="seleccionarFotos($event)"
+            />
+          </label>
+        }
+      </section>
+    </fieldset>
+
+    <!-- Barra de guardado: siempre a mano en un formulario tan largo -->
+    @if (puedeEditar()) {
+      <div
+        class="sticky bottom-0 z-20 -mx-1 rounded-2xl border border-[var(--border)] bg-[var(--surface)]/95 shadow-lg backdrop-blur"
+      >
+        <div class="flex items-center justify-end gap-3 px-4 py-3">
+          <span
+            class="text-sm"
+            [class]="sucio() ? 'font-semibold text-amber-700' : 'text-[var(--muted)]'"
+          >
+            {{
+              sucio()
+                ? 'Cambios sin guardar'
+                : inf.guardado
+                  ? 'Todo guardado'
+                  : 'Borrador sin guardar'
+            }}
+          </span>
+          <button
+            type="button"
+            (click)="guardar()"
+            [disabled]="guardando() || subiendo() > 0"
+            class="flex h-11 items-center gap-2 rounded-xl bg-[var(--primary)] px-5 text-sm font-bold text-white transition hover:bg-[var(--primary-dark)] disabled:opacity-60"
+          >
+            <i
+              class="fa-solid"
+              [class]="guardando() ? 'fa-circle-notch fa-spin' : 'fa-floppy-disk'"
+            ></i>
+            Guardar informe
+          </button>
+        </div>
+      </div>
+    }
+  }
+</div>

@@ -1,0 +1,157 @@
+# SIGUBA - entorno completo (SQL Server + Spring Boot + Angular)
+#   docker compose up -d --build
+#
+#   frontend    http://localhost:4200
+#   backend     http://localhost:8080/api
+#   sql server  localhost:1434  (sa / ${MSSQL_SA_PASSWORD})
+
+services:
+  # ---------------------------------------------------------------- base de datos
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    # La imagen de SQL Server solo se publica para amd64; en Apple Silicon
+    # Docker la ejecuta emulada.
+    platform: linux/amd64
+    container_name: siguba-sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:-Password_Seguro123*}
+      MSSQL_PID: Developer
+    ports:
+      - "1434:1433"
+    volumes:
+      - mssql_data:/var/opt/mssql
+    healthcheck:
+      test: >-
+        /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa
+        -P "$$MSSQL_SA_PASSWORD" -C -Q "SELECT 1"
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+    networks: [siguba]
+
+  # ------------------------------------------------- carga del esquema y los datos
+  # Contenedor de un solo uso: crea MDMQ_SIGUBA, el esquema PROYECTO_UBA,
+  # las tablas, los datos, las FKs y el login de aplicacion. Reutiliza la
+  # imagen de SQL Server porque ya trae sqlcmd (no hay que descargar otra).
+  db-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    platform: linux/amd64
+    container_name: siguba-db-init
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    environment:
+      DB_HOST: sqlserver
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:-Password_Seguro123*}
+      APP_DB_USER: ${APP_DB_USER:-siguba}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:-Siguba_Dev123*}
+      # 1 = borrar y recargar la base aunque ya este inicializada.
+      FORCE_DB_INIT: ${FORCE_DB_INIT:-0}
+      # 0 = no crear los usuarios de prueba (admin/tecnico/usuario).
+      SEED_DEMO_USERS: ${SEED_DEMO_USERS:-1}
+    volumes:
+      - ./BACKEND/docker/initdb:/initdb:ro
+      - ./BACKEND/docker/init-db.sh:/init-db.sh:ro
+    entrypoint: ["/bin/bash", "/init-db.sh"]
+    restart: "no"
+    networks: [siguba]
+
+
+  # ------------------------------------------------------- almacen de archivos
+  # MinIO guarda las imagenes de denuncias, inspecciones y ubicaciones. La base
+  # solo almacena la ruta (columnas RUTA_IMAGEN); el archivo vive aqui.
+  minio:
+    image: minio/minio:latest
+    container_name: siguba-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-siguba}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-Siguba_Minio123*}
+    ports:
+      - "9000:9000"   # API S3
+      - "9001:9001"   # consola web
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 15s
+    networks: [siguba]
+
+  # Crea el bucket una sola vez y termina.
+  minio-init:
+    image: minio/mc:latest
+    container_name: siguba-minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-siguba}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-Siguba_Minio123*}
+      MINIO_BUCKET: ${MINIO_BUCKET:-siguba}
+    entrypoint: >-
+      /bin/sh -c "
+      mc alias set siguba http://minio:9000 \"$$MINIO_ROOT_USER\" \"$$MINIO_ROOT_PASSWORD\" &&
+      (mc ls siguba/$$MINIO_BUCKET >/dev/null 2>&1 || mc mb siguba/$$MINIO_BUCKET) &&
+      echo 'Bucket '$$MINIO_BUCKET' listo.'
+      "
+    restart: "no"
+    networks: [siguba]
+
+  # ------------------------------------------------------------------- backend
+  backend:
+    build:
+      context: ./BACKEND
+    container_name: siguba-backend
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
+      minio-init:
+        condition: service_completed_successfully
+    environment:
+      SERVER_PORT: 8080
+      SPRING_DATASOURCE_URL: >-
+        jdbc:sqlserver://sqlserver:1433;databaseName=MDMQ_SIGUBA;encrypt=true;trustServerCertificate=true
+      SPRING_DATASOURCE_USERNAME: ${APP_DB_USER:-siguba}
+      SPRING_DATASOURCE_PASSWORD: ${APP_DB_PASSWORD:-Siguba_Dev123*}
+      # El esquema lo crea db-init; Hibernate no debe tocarlo.
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+      # Clave de firma de los JWT (minimo 32 caracteres).
+      APP_JWT_SECRET: ${APP_JWT_SECRET:-clave-de-desarrollo-siguba-cambiar-en-produccion}
+      # nginx reenvia la cabecera Origin del navegador; Spring rechaza PUT/POST
+      # ("Invalid CORS request") si ese origen no esta aqui. Sigue a FRONTEND_PORT.
+      APP_CORS_ALLOWEDORIGINS: http://localhost:${FRONTEND_PORT:-4200},http://127.0.0.1:${FRONTEND_PORT:-4200}
+      # Almacen de archivos
+      MINIO_URL: http://minio:9000
+      MINIO_ACCESS_KEY: ${MINIO_ROOT_USER:-siguba}
+      MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-Siguba_Minio123*}
+      MINIO_BUCKET: ${MINIO_BUCKET:-siguba}
+      # URL con la que el navegador alcanza MinIO (no la de la red interna).
+      MINIO_PUBLIC_URL: ${MINIO_PUBLIC_URL:-http://localhost:9000}
+    ports:
+      - "8080:8080"
+    networks: [siguba]
+
+  # ------------------------------------------------------------------ frontend
+  frontend:
+    build:
+      context: ./FRONTEND
+    container_name: siguba-frontend
+    depends_on:
+      - backend
+    ports:
+      # FRONTEND_PORT permite cambiarlo si el 4200 ya esta ocupado.
+      - "${FRONTEND_PORT:-4200}:80"
+    networks: [siguba]
+
+volumes:
+  mssql_data:
+  minio_data:
+
+networks:
+  siguba:
+    driver: bridge

@@ -1,0 +1,30 @@
+/* El desplazamiento del cajon va en CSS propio y no con utilidades de Tailwind.
+   Tailwind genera sus clases escaneando el texto de las plantillas, y no
+   reconoce las que solo aparecen dentro de un binding de Angular
+   (`[class.-translate-x-full]`): la regla nunca se generaba y el menu quedaba
+   abierto tapando el contenido en pantallas estrechas. */
+
+.cajon {
+  transform: translateX(-100%);
+  transition: transform 300ms ease-out;
+}
+
+.cajon.abierto {
+  transform: translateX(0);
+}
+
+/* A partir de 1280px el menu es fijo: siempre visible y sin animacion. */
+@media (min-width: 1280px) {
+  .cajon,
+  .cajon.abierto {
+    transform: translateX(0);
+    transition: none;
+  }
+}
+
+/* Quien prefiere menos movimiento no ve la animacion. */
+@media (prefers-reduced-motion: reduce) {
+  .cajon {
+    transition: none;
+  }
+}

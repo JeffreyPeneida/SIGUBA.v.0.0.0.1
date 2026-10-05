@@ -1,0 +1,1016 @@
+/* Convertido del tema oscuro original a la paleta comun de SIGUBA.
+   Los colores se mapearon por su papel (fondo, superficie, texto,
+   marca), no por parecido de tono. */
+
+/* El selector universal ponia la fuente en TODO, incluidos los <i> de
+   FontAwesome, que se dibujaban como cuadrados vacios. Se excluyen los iconos
+   y se deja la tipografia al resto. */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+*:not([class*="fa-"]) {
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+}
+
+body {
+    background: var(--surface-muted);
+    color: var(--text);
+    min-height: auto;
+}
+
+/* =======================
+   CONTENEDOR GENERAL
+======================= */
+
+.background {
+    width: 100%;
+    min-height: auto;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 0;
+
+    background: var(--background);
+}
+
+.container {
+    width: 100%;
+    max-width: 1500px;
+
+    padding: 40px;
+
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+
+    border-radius: 20px;
+
+    box-shadow: 0 10px 30px rgb(15 23 42 / 0.08);
+}
+
+/* =======================
+   HEADER
+======================= */
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 35px;
+    padding-bottom: 20px;
+
+    border-bottom: 1px solid var(--border);
+}
+
+.header-titulo,
+.header-acciones {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+}
+
+/* Volver arriba y abajo: el formulario mide mas de una pantalla. */
+.btn-atras,
+.btn-ayuda {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    height: 2.25rem;
+    padding: 0 0.875rem;
+
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+
+    background: var(--surface);
+    color: var(--text);
+
+    font-size: 0.8125rem;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: background .2s, border-color .2s, color .2s;
+}
+
+.btn-atras:hover {
+    background: var(--surface-muted);
+}
+
+.btn-ayuda {
+    border-color: color-mix(in srgb, var(--primary) 35%, transparent);
+    background: var(--primary-soft);
+    color: var(--primary);
+}
+
+.btn-ayuda:hover {
+    background: color-mix(in srgb, var(--primary) 18%, transparent);
+}
+
+.header h1 {
+    color: var(--text);
+
+    font-size: 2rem;
+    font-weight: 700;
+
+    letter-spacing: 2px;
+}
+
+.codigo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+
+    color: var(--primary);
+
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+/* =======================
+   CONTENIDO
+======================= */
+
+.contenido {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 40px;
+}
+
+.columna {
+    flex: 1;
+    min-width: 350px;
+}
+
+/* =======================
+   CAMPOS
+======================= */
+
+.campo {
+    display: flex;
+    flex-direction: column;
+
+    margin-bottom: 22px;
+}
+
+.campo label {
+    margin-bottom: 8px;
+
+    color: var(--text);
+
+    font-size: 14px;
+    font-weight: 500;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+
+    padding: 14px 16px;
+
+    border-radius: 14px;
+
+    border: 1px solid var(--border);
+
+    background: var(--surface);
+
+    color: var(--text);
+
+    font-size: 14px;
+
+    transition:
+        border-color .25s,
+        background .25s;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+
+    border-color: var(--primary);
+
+    background: var(--surface);
+}
+
+textarea {
+    min-height: 180px;
+    resize: none;
+}
+
+select option {
+    background: var(--surface-muted);
+    color: var(--text);
+}
+
+/* =======================
+   CHECKBOXES
+======================= */
+
+.checks {
+    display: flex;
+    flex-direction: column;
+
+    gap: 12px;
+
+    margin-top: 6px;
+}
+
+.checks label {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    color: var(--text);
+}
+
+.checks input[type="checkbox"] {
+    width: auto;
+}
+
+/* =======================
+   MAPA
+======================= */
+
+.mapa {
+    width: 100%;
+    /* Antes solo contenia el mapa; ahora lleva tambien el buscador y la
+       pista de uso, asi que 250px dejaban el mapa casi sin espacio. */
+    height: 420px;
+
+    margin-top: 20px;
+
+    border-radius: 16px;
+
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+
+    color: var(--muted);
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.map-placeholder {
+    display: none;
+}
+
+.mapa {
+    overflow: hidden;
+    position: relative;
+    cursor: default;
+}
+
+
+.map-container {
+    width: 100%;
+    height: 100%;
+    border-radius: 16px;
+}
+
+.map-info {
+    margin-top: 14px;
+    padding: 12px 16px;
+    border-radius: 14px;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.map-info p {
+    margin: 0;
+}
+
+/* =======================
+   IMÁGENES
+======================= */
+
+/* =======================
+   IMAGENES
+======================= */
+
+.campo-imagenes label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.campo-imagenes .opcional {
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  background: var(--surface-muted);
+  color: var(--muted);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Antes era un boton plano que no se leia como zona de carga: nadie adivinaba
+   que ademas aceptaba arrastrar archivos. */
+.zona-carga {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+
+  width: 100%;
+  padding: 1.75rem 1rem;
+
+  border: 2px dashed var(--border);
+  border-radius: 1rem;
+
+  background: var(--surface);
+  color: var(--text);
+
+  cursor: pointer;
+  text-align: center;
+
+  transition: border-color .2s, background .2s, transform .2s;
+}
+
+.zona-carga:hover:not(:disabled),
+.zona-carga.arrastrando {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+  transform: translateY(-2px);
+}
+
+.zona-carga:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.zona-carga > i {
+  font-size: 1.75rem;
+  color: var(--primary);
+}
+
+.zona-carga.arrastrando > i {
+  transform: translateY(-3px);
+}
+
+.zona-titulo {
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+
+.zona-pista,
+.zona-conteo {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.zona-conteo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: 0.25rem;
+  color: var(--success, #16a34a);
+  font-weight: 600;
+}
+
+/* =======================
+   BARRA DE PROGRESO
+======================= */
+
+.progreso {
+  margin-top: 0.75rem;
+}
+
+.progreso-barra {
+  height: 0.5rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--surface-muted);
+}
+
+.progreso-relleno {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--primary);
+  transition: width .2s ease;
+}
+
+.progreso-texto {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.375rem 0 0;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+/* =======================
+   MINIATURAS
+======================= */
+
+.preview-imagen {
+    width: 100%;
+
+    margin-top: 1rem;
+
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+    align-items: start;
+
+    padding: 1rem;
+
+    border-radius: 1rem;
+
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+
+    color: var(--muted);
+}
+
+.preview-imagen.vacia {
+    display: block;
+    padding: 1.75rem 1rem;
+}
+
+.preview-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.8125rem;
+}
+
+.preview-empty i {
+    font-size: 1.5rem;
+    opacity: 0.5;
+}
+
+.preview-item {
+    position: relative;
+    margin: 0;
+    overflow: hidden;
+    border-radius: 0.875rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+}
+
+/* La foto se ve entera: recortarla escondia justo lo que se quiere denunciar.
+   El fondo neutro rellena lo que sobra segun la proporcion de cada imagen. */
+.preview-lienzo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 140px;
+
+    background: var(--surface-muted);
+    color: var(--muted);
+}
+
+.preview-item img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.preview-item figcaption {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.5rem 0.625rem;
+    border-top: 1px solid var(--border);
+}
+
+.preview-nombre {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.preview-peso {
+    flex: none;
+    font-size: 0.6875rem;
+    color: var(--muted);
+}
+
+.preview-quitar {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 1.75rem;
+    height: 1.75rem;
+    display: grid;
+    place-items: center;
+    border: none;
+    border-radius: 999px;
+    background: rgb(15 23 42 / 0.6);
+    color: #fff;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: background .2s;
+}
+
+.preview-quitar:hover {
+    background: var(--danger, #dc2626);
+}
+
+/* =======================
+   BOTONES
+======================= */
+
+.botones {
+    display: flex;
+    justify-content: flex-end;
+
+    gap: 15px;
+
+    margin-top: 40px;
+    padding-top: 25px;
+
+    border-top: 1px solid var(--border);
+}
+
+.btn-volver,
+.btn-guardar {
+    height: 52px;
+
+    border-radius: 16px;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.btn-volver {
+    min-width: 180px;
+
+    background: transparent;
+
+    border: 1px solid var(--border);
+
+    color: var(--text);
+
+    transition:
+        background .25s,
+        transform .25s;
+}
+
+.btn-volver:hover {
+    background: var(--surface);
+
+    transform: translateY(-2px);
+}
+
+.btn-guardar {
+    min-width: 220px;
+
+    border: none;
+
+    background: var(--primary);
+
+    color: white;
+
+    transition:
+        background .25s,
+        transform .25s;
+}
+
+.btn-guardar:hover {
+    background: #3D79FF;
+
+    transform: translateY(-2px);
+}
+
+/* =======================
+   SCROLLBAR
+======================= */
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--surface);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--surface-muted);
+
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, .25);
+}
+
+/* =======================
+   RESPONSIVE
+======================= */
+
+@media (max-width: 900px) {
+
+    .background {
+        padding: 25px;
+    }
+
+    .container {
+        padding: 30px;
+    }
+
+    .contenido {
+        flex-direction: column;
+
+        gap: 30px;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: stretch;
+
+        gap: 20px;
+
+        text-align: center;
+    }
+
+    /* En movil no caben titulo y acciones en una linea. */
+    .header-titulo,
+    .header-acciones {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .preview-imagen {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+
+    .botones {
+        flex-direction: column;
+    }
+
+    .btn-volver,
+    .btn-guardar {
+        width: 100%;
+    }
+}
+
+/* ==========================================================================
+   Validacion visible
+   ==========================================================================
+   El formulario tiene 13 campos obligatorios y no mostraba ni uno solo de sus
+   errores: al enviar solo decia "complete los campos" sin senalar cuales.
+   ========================================================================== */
+
+.obligatorio {
+  color: var(--danger);
+  font-weight: 700;
+  margin-left: 0.125rem;
+}
+
+/* Campo con error: borde y fondo, para que se vea sin leer nada. */
+.campo-invalido input,
+.campo-invalido select,
+.campo-invalido textarea {
+  border-color: var(--danger) !important;
+  background: color-mix(in srgb, var(--danger-soft) 55%, transparent) !important;
+}
+
+.campo-invalido input:focus,
+.campo-invalido select:focus,
+.campo-invalido textarea:focus {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--danger) 12%, transparent) !important;
+}
+
+.campo-invalido label {
+  color: var(--danger);
+}
+
+.mensaje-campo {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.375rem;
+  margin: 0.375rem 0 0;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--danger);
+}
+
+/* Resumen de lo que falta, arriba del formulario. */
+.resumen-errores {
+  grid-column: 1 / -1;
+  margin-bottom: 1.25rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid #fecaca;
+  border-radius: 1rem;
+  background: var(--danger-soft);
+}
+
+.resumen-titulo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--danger);
+}
+
+.resumen-errores ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.resumen-errores li {
+  padding: 0.125rem 0.625rem;
+  border: 1px solid #fecaca;
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--danger);
+}
+
+/* Cuantos caracteres quedan en la narracion. */
+.contador {
+  margin: 0.375rem 0 0;
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-align: right;
+}
+
+.contador-limite {
+  font-weight: 700;
+  color: var(--warning);
+}
+
+/* ==========================================================================
+   Buscador de direcciones del mapa
+   ==========================================================================
+   Antes solo se podia marcar el punto a mano: encontrar una calle concreta en
+   Quito obligaba a arrastrar y ampliar hasta dar con ella.
+   ========================================================================== */
+
+.buscador-mapa {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.625rem;
+}
+
+.buscador-campo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.buscador-campo > i {
+  position: absolute;
+  left: 0.875rem;
+  font-size: 0.8125rem;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.buscador-campo input {
+  width: 100%;
+  height: 2.75rem;
+  padding: 0 2.25rem 0 2.4375rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--surface);
+  font-size: 0.875rem;
+  outline: none;
+}
+
+.buscador-campo input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 12%, transparent);
+}
+
+.buscador-campo > button {
+  position: absolute;
+  right: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 0;
+  border-radius: 0.375rem;
+  background: transparent;
+  color: #94a3b8;
+  cursor: pointer;
+}
+
+.buscador-campo > button:hover {
+  background: var(--surface-muted);
+  color: var(--text);
+}
+
+.btn-buscar,
+.btn-ubicacion {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 2.75rem;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: 0.75rem;
+  background: var(--primary);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 150ms;
+}
+
+.btn-buscar:hover:not(:disabled),
+.btn-ubicacion:hover:not(:disabled) {
+  background: var(--primary-dark);
+}
+
+.btn-buscar:disabled,
+.btn-ubicacion:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-ubicacion {
+  width: 2.75rem;
+  padding: 0;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+}
+
+.btn-ubicacion:hover:not(:disabled) {
+  border-color: var(--primary);
+  background: var(--surface);
+  color: var(--primary);
+}
+
+/* Lista de coincidencias, solo cuando hay que elegir. */
+.resultados-busqueda {
+  margin: 0 0 0.625rem;
+  padding: 0.25rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--surface);
+  list-style: none;
+}
+
+.resultados-busqueda button {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--text);
+  font-size: 0.8125rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.resultados-busqueda button:hover {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+.resultados-busqueda i {
+  margin-top: 0.125rem;
+  color: var(--primary);
+}
+
+/* El buscador y la pista van en flujo, arriba del mapa: antes flotaban sobre
+   las teselas y Leaflet los tapaba con sus propios paneles. */
+.lienzo-mapa {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Sin esto el mapa colapsaba: su height:100% se resolvia contra este
+   contenedor, que no tenia alto propio. */
+.lienzo-mapa .map-container {
+  flex: 1;
+  min-height: 0;
+}
+
+.lienzo-mapa .buscador-mapa {
+  flex: none;
+  margin-bottom: 0.5rem;
+}
+
+/* Los resultados se superponen en vez de empujar: si el mapa encogiera cada
+   vez que hay coincidencias, el punto elegido saldria de la vista. */
+.lienzo-mapa .resultados-busqueda {
+  position: absolute;
+  top: 3rem;
+  left: 0;
+  right: 0;
+  z-index: 900;          /* por encima de los paneles de Leaflet */
+  max-height: 12rem;
+  overflow-y: auto;
+  margin: 0;
+  box-shadow: var(--shadow);
+}
+
+
+/* El globo del marcador no debe tapar el buscador. */
+.leaflet-tooltip {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* La leyenda vive fuera de .mapa, que recorta lo que sobresale. */
+.map-info p {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.map-info .map-coords {
+  margin-top: 0.25rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.map-info i {
+  color: var(--primary);
+}
+
+/* ==========================================================================
+   Campos resaltados
+
+   Con borde #e2e8f0 sobre fondo casi blanco los campos se confundian con la
+   tarjeta y costaba ver donde escribir. Borde mas firme, sombra leve, y un
+   anillo claro al enfocar. El icono de la etiqueta dice que se pide antes de
+   leer el texto.
+   ========================================================================== */
+
+.campo > label,
+.campo-lectura > label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.campo > label > i:first-child,
+.campo-lectura > label > i:first-child {
+  width: 1rem;
+  font-size: 13px;
+  text-align: center;
+  color: var(--primary);
+}
+
+.campo > input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.campo > textarea {
+  border: 1.5px solid var(--border-strong);
+  background: var(--surface);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.campo > input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):hover,
+.campo > textarea:hover {
+  border-color: #94a3b8;
+}
+
+.campo > input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):focus,
+.campo > textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 14%, transparent);
+}
+
+.campo:not(.campo-invalido):focus-within > label {
+  color: var(--primary);
+}

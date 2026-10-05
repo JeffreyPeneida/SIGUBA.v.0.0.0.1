@@ -1,0 +1,34 @@
+<div>
+  <label [attr.for]="para()" class="mb-1.5 flex items-center gap-2 text-sm font-semibold text-slate-700">
+    @if (icono()) {
+      <i class="fa-solid {{ icono() }} w-4 text-center text-xs text-[var(--muted)]"></i>
+    }
+
+    {{ etiqueta() }}
+
+    @if (opcional()) {
+      <span class="text-xs font-normal text-[var(--muted)]">(opcional)</span>
+    }
+  </label>
+
+  <!-- El input real lo pone quien usa el componente -->
+  <div class="relative" [class.campo-fallo]="enFallo()" [class.campo-correcto]="correcto()">
+    <ng-content />
+
+    @if (correcto()) {
+      <i class="fa-solid fa-circle-check pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[var(--success)]"></i>
+    }
+  </div>
+
+  @if (enFallo()) {
+    <p class="mt-1.5 flex items-start gap-1.5 text-xs font-medium text-[var(--danger)]" role="alert">
+      <i class="fa-solid fa-circle-exclamation mt-0.5"></i>
+      {{ mensaje() }}
+    </p>
+  } @else if (ayuda()) {
+    <p class="mt-1.5 flex items-start gap-1.5 text-xs text-[var(--muted)]">
+      <i class="fa-regular fa-circle-question mt-0.5"></i>
+      {{ ayuda() }}
+    </p>
+  }
+</div>

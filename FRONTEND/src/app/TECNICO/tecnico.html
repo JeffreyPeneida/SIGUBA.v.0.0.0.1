@@ -1,0 +1,73 @@
+<div class="space-y-5">
+
+  <header class="flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-extrabold tracking-tight text-[var(--text)]">
+        {{ esAdmin() ? 'Trámites asignados' : 'Mis trámites' }}
+      </h1>
+      <p class="text-sm text-[var(--muted)]">
+        {{ esAdmin()
+            ? 'Carga de trabajo del personal de campo'
+            : 'Inspecciones a tu cargo' }}
+      </p>
+    </div>
+
+    <button type="button" (click)="cargar()"
+      class="flex h-11 items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)]
+             px-4 text-sm font-semibold text-[var(--text)] transition hover:border-[var(--primary)]">
+      <i class="fa-solid fa-rotate" [class.fa-spin]="cargando()"></i>
+      Actualizar
+    </button>
+  </header>
+
+  <!-- Etapas -->
+  <div class="flex flex-wrap items-center gap-3 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
+
+    <div class="flex flex-wrap gap-1 rounded-xl bg-[var(--surface-muted)] p-1">
+      <button type="button" (click)="etapa.set('porInspeccionar')"
+        class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition"
+        [class]="etapa() === 'porInspeccionar'
+                  ? 'bg-[var(--surface)] text-[var(--primary)] shadow-sm'
+                  : 'text-[var(--muted)] hover:text-[var(--text)]'">
+        <i class="fa-solid fa-clipboard-list text-xs"></i>
+        Por inspeccionar
+        <span class="rounded-full bg-amber-100 px-2 text-xs font-bold text-amber-700">
+          {{ conteo().porInspeccionar }}
+        </span>
+      </button>
+
+      <button type="button" (click)="etapa.set('inspeccionados')"
+        class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition"
+        [class]="etapa() === 'inspeccionados'
+                  ? 'bg-[var(--surface)] text-[var(--primary)] shadow-sm'
+                  : 'text-[var(--muted)] hover:text-[var(--text)]'">
+        <i class="fa-solid fa-circle-check text-xs"></i>
+        Completados
+        <span class="rounded-full bg-emerald-100 px-2 text-xs font-bold text-emerald-700">
+          {{ conteo().inspeccionados }}
+        </span>
+      </button>
+    </div>
+
+    <div class="relative min-w-[220px] flex-1">
+      <i class="fa-solid fa-magnifying-glass pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-slate-400"></i>
+      <input type="search" [value]="filtro()" (input)="filtro.set($any($event.target).value)"
+        placeholder="Buscar por código, denunciante o dirección"
+        class="h-11 w-full rounded-xl border border-[var(--border)] bg-slate-50/70 pl-11 pr-4 text-sm outline-none
+               transition focus:border-[var(--primary)] focus:bg-white focus:ring-4 focus:ring-[var(--primary)]/10" />
+    </div>
+  </div>
+
+  <app-tramites-tabla
+    [tramites]="visibles()"
+    [cargando]="cargando()"
+    [puedeInspeccionar]="etapa() === 'porInspeccionar'"
+    [vacioTitulo]="etapa() === 'porInspeccionar'
+                    ? 'No tienes inspecciones pendientes'
+                    : 'Aún no hay inspecciones completadas'"
+    vacioTexto="La administración asigna los trámites al personal de campo."
+    (verDetalle)="verDetalle($event)"
+    (inspeccionar)="inspeccionar($event)"
+    [puedeInforme]="true"
+    (informe)="abrirInforme($event)" />
+</div>

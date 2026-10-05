@@ -1,0 +1,84 @@
+<button
+  type="button"
+  [class]="(clase() || 'sb-base') + ' sb-trigger'"
+  [class.sb-vacio]="!seleccionada()"
+  [disabled]="deshabilitado()"
+  aria-haspopup="listbox"
+  [attr.aria-expanded]="abierto()"
+  (click)="alternar()"
+  (keydown)="teclaEnBoton($event)">
+  <span class="sb-texto">{{ textoSeleccionado() || placeholder() }}</span>
+  <i class="fa-solid fa-chevron-down sb-flecha" aria-hidden="true"></i>
+</button>
+
+@if (abierto()) {
+  <div class="sb-panel" [style]="posicion()">
+
+    <div class="sb-busqueda">
+      <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+      <input
+        #buscador
+        type="text"
+        autocomplete="off"
+        placeholder="Buscar…"
+        aria-label="Buscar opción"
+        [value]="busqueda()"
+        (input)="buscar($any($event.target).value)"
+        (keydown)="teclaEnBuscador($event)">
+      @if (busqueda()) {
+        <button type="button" class="sb-limpiar" title="Limpiar búsqueda"
+          (click)="buscar(''); buscador.focus()">
+          <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+        </button>
+      }
+    </div>
+
+    <ul #lista class="sb-lista" role="listbox">
+
+      @if (conVacia()) {
+        <li role="option" data-indice="0"
+          class="sb-opcion sb-opcion-vacia"
+          [class.sb-resaltada]="resaltado() === 0"
+          [attr.aria-selected]="!seleccionada()"
+          (mousedown)="$event.preventDefault()"
+          (mouseenter)="resaltado.set(0)"
+          (click)="elegir(null)">
+          {{ opcionVacia() }}
+        </li>
+      }
+
+      @for (opcion of visibles(); track $index; let i = $index) {
+        <li role="option"
+          class="sb-opcion"
+          [attr.data-indice]="i + (conVacia() ? 1 : 0)"
+          [class.sb-resaltada]="resaltado() === i + (conVacia() ? 1 : 0)"
+          [class.sb-elegida]="esElegida(opcion)"
+          [attr.aria-selected]="esElegida(opcion)"
+          (mousedown)="$event.preventDefault()"
+          (mouseenter)="resaltado.set(i + (conVacia() ? 1 : 0))"
+          (click)="elegir(opcion)">
+          <span>{{ opcion[campoTexto()] }}</span>
+          @if (esElegida(opcion)) {
+            <i class="fa-solid fa-check" aria-hidden="true"></i>
+          }
+        </li>
+      }
+
+      @if (filtradas().length === 0) {
+        <li class="sb-sin-resultados">
+          @if (busqueda()) {
+            Sin resultados para «{{ busqueda() }}»
+          } @else {
+            No hay opciones disponibles
+          }
+        </li>
+      }
+    </ul>
+
+    @if (filtradas().length > visibles().length) {
+      <div class="sb-pie">
+        Mostrando {{ visibles().length }} de {{ filtradas().length }}. Escribe para afinar.
+      </div>
+    }
+  </div>
+}

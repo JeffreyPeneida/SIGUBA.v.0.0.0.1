@@ -1,0 +1,97 @@
+<!-- Velo: solo existe cuando el menu es un cajon y esta abierto -->
+@if (menu.abierto()) {
+  <div
+    class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm xl:hidden"
+    (click)="menu.cerrar()"
+    aria-hidden="true"
+  ></div>
+}
+
+<!-- Solo un cajon cerrado queda inerte (ver menu.inerte()). En escritorio el
+     menu es fijo, y marcarlo inerte lo dejaba visible pero sin responder a
+     ningun clic: parecia colgado. -->
+<aside
+  class="cajon fixed inset-y-0 left-0 z-50 flex w-[min(85vw,var(--sidebar-width))] flex-col
+         overflow-y-auto bg-gradient-to-b from-[#0b1220] via-[var(--mdmq-azul)] to-[#0b3b8c]
+         text-white shadow-2xl xl:w-[var(--sidebar-width)] xl:shadow-xl"
+  [class.abierto]="menu.abierto()"
+  [attr.inert]="menu.inerte() ? '' : null"
+  aria-label="Navegación principal"
+>
+  <!-- Marca -->
+  <header class="flex items-center gap-3 px-5 py-6">
+    <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/20 bg-white/10 backdrop-blur">
+      <i class="fa-solid fa-shield-dog text-lg text-sky-300"></i>
+    </div>
+
+    <div class="min-w-0 flex-1">
+      <p class="truncate text-base font-extrabold tracking-wide">SIGUBA</p>
+      <p class="truncate text-xs text-white/60">Bienestar Animal · MDMQ</p>
+    </div>
+
+    <!-- Cerrar: solo cuando es cajon -->
+    <button
+      type="button"
+      (click)="menu.cerrar()"
+      class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-white/70
+             transition hover:bg-white/10 hover:text-white xl:hidden"
+      aria-label="Cerrar el menú"
+    >
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </header>
+
+  <!-- Identidad del sistema -->
+  <section class="mx-5 mb-6 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+    <span class="mb-2 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-emerald-300">
+      <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400"></span>
+      Sistema activo
+    </span>
+
+    <p class="text-sm font-semibold leading-snug">Vigilancia de plagas urbanas</p>
+  </section>
+
+  <!-- Navegación -->
+  <nav class="flex-1 px-3 pb-4">
+    @for (seccion of seccionesVisibles(); track seccion.titulo) {
+      <section class="mb-6">
+        <p class="mb-2 px-3 text-[11px] font-bold uppercase tracking-[0.14em] text-white/40">
+          {{ seccion.titulo }}
+        </p>
+
+        <ul class="space-y-1">
+          @for (enlace of seccion.enlaces; track enlace.ruta) {
+            <li>
+              <a
+                [routerLink]="enlace.ruta"
+                (click)="alNavegar()"
+                routerLinkActive="bg-white/15 text-white shadow-inner"
+                class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium
+                       text-white/70 transition hover:bg-white/10 hover:text-white"
+              >
+                <i class="fa-solid {{ enlace.icono }} w-5 shrink-0 text-center text-sky-300"></i>
+                <span class="truncate">{{ enlace.texto }}</span>
+              </a>
+            </li>
+          }
+        </ul>
+      </section>
+    }
+  </nav>
+
+  <!-- Usuario -->
+  @if (usuario(); as u) {
+    <footer class="border-t border-white/10 px-5 py-4">
+      <div class="flex items-center gap-3">
+        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-sky-400/20 text-xs font-bold text-sky-200">
+          {{ iniciales() }}
+        </div>
+
+        <div class="min-w-0">
+          <p class="truncate text-sm font-semibold">{{ u.nombre }} {{ u.apellido }}</p>
+          <p class="truncate text-xs text-white/50">{{ u.rol }}</p>
+        </div>
+      </div>
+    </footer>
+  }
+</aside>

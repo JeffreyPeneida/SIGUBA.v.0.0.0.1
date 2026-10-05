@@ -1,0 +1,51 @@
+<div class="space-y-5">
+
+  <header class="flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-extrabold tracking-tight text-[var(--text)]">Mis denuncias</h1>
+      <p class="text-sm text-[var(--muted)]">Seguimiento de los trámites que has registrado</p>
+    </div>
+
+    <button type="button" (click)="nuevaDenuncia()"
+      class="flex h-11 items-center gap-2 rounded-xl bg-[var(--primary)] px-5 text-sm font-bold text-white
+             transition hover:bg-[var(--primary-dark)]">
+      <i class="fa-solid fa-file-circle-plus"></i>
+      Nueva denuncia
+    </button>
+  </header>
+
+  <div class="grid gap-4 sm:grid-cols-3">
+    <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
+      <p class="text-2xl font-extrabold text-[var(--text)]">{{ resumen().total }}</p>
+      <p class="text-sm text-[var(--muted)]">Denuncias registradas</p>
+    </div>
+
+    <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
+      <p class="text-2xl font-extrabold text-amber-600">{{ resumen().enProceso }}</p>
+      <p class="text-sm text-[var(--muted)]">En proceso</p>
+    </div>
+
+    <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
+      <p class="text-2xl font-extrabold text-emerald-600">{{ resumen().atendidos }}</p>
+      <p class="text-sm text-[var(--muted)]">Atendidas</p>
+    </div>
+  </div>
+
+  <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
+    <div class="relative">
+      <i class="fa-solid fa-magnifying-glass pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-slate-400"></i>
+      <input type="search" [value]="filtro()" (input)="filtro.set($any($event.target).value)"
+        placeholder="Buscar por código, dirección o barrio"
+        class="h-11 w-full rounded-xl border border-[var(--border)] bg-slate-50/70 pl-11 pr-4 text-sm outline-none
+               transition focus:border-[var(--primary)] focus:bg-white focus:ring-4 focus:ring-[var(--primary)]/10" />
+    </div>
+  </div>
+
+  <app-tramites-tabla
+    [tramites]="visibles()"
+    [cargando]="cargando()"
+    [mostrarTecnico]="false"
+    vacioTitulo="Todavía no has registrado denuncias"
+    vacioTexto="Usa el botón «Nueva denuncia» para reportar un caso."
+    (verDetalle)="verDetalle($event)" />
+</div>

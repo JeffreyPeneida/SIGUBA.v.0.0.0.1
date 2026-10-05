@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  # Servicio de la Base de Datos (SQL Server)
+  sqlserver-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver-db
+    environment:
+      ACCEPT_EULA: "Y"                           
+      MSSQL_SA_PASSWORD: "Password_Seguro123*"    # Contraseña fuerte para el contenedor
+    ports:
+      - "1434:1433"                              # Puerto estándar de SQL Server
+    volumes:
+      - mssql_data:/var/opt/mssql                # Persistencia de datos en tu máquina
+    networks:
+      - spring-network
+
+  # Servicio de la Aplicación Spring Boot
+  spring-app:
+    build: .
+    container_name: spring-boot-app
+    ports:
+      - "8088:8080"
+    environment:
+      # CAMBIO AQUÍ: Ahora apunta a databaseName=MDMQ_SIGUBA
+      SPRING_DATASOURCE_URL: jdbc:sqlserver://sqlserver-db:1433;databaseName=MDMQ_SIGUBA;encrypt=true;trustServerCertificate=true
+      SPRING_DATASOURCE_USERNAME: sa             # Usuario Administrador del contenedor
+      SPRING_DATASOURCE_PASSWORD: "Password_Seguro123*"
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    depends_on:
+      - sqlserver-db
+    networks:
+      - spring-network
+
+volumes:
+  mssql_data:                                    # Volumen para que no pierdas tus tablas al apagar Docker
+
+networks:
+  spring-network:
+    driver: bridge

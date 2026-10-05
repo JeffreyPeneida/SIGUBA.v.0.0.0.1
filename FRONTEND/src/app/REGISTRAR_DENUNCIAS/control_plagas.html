@@ -1,0 +1,101 @@
+<div class="space-y-5">
+
+  <!-- Encabezado -->
+  <header class="flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-extrabold tracking-tight text-[var(--text)]">Control de plagas</h1>
+      <p class="text-sm text-[var(--muted)]">Seguimiento de denuncias e inspecciones</p>
+    </div>
+
+    <button type="button" (click)="cargar()"
+      class="flex h-11 items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)]
+             px-4 text-sm font-semibold text-[var(--text)] transition hover:border-[var(--primary)]">
+      <i class="fa-solid fa-rotate" [class.fa-spin]="cargando()"></i>
+      Actualizar
+    </button>
+  </header>
+
+  <!-- Resumen -->
+  <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+
+    <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
+      <div class="mb-2 flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--primary-soft)]">
+        <i class="fa-solid fa-folder-open text-[var(--primary)]"></i>
+      </div>
+      <p class="text-2xl font-extrabold text-[var(--text)]">{{ resumen().total }}</p>
+      <p class="text-sm text-[var(--muted)]">Trámites registrados</p>
+    </div>
+
+    <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
+      <div class="mb-2 flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50">
+        <i class="fa-solid fa-clock text-amber-600"></i>
+      </div>
+      <p class="text-2xl font-extrabold text-[var(--text)]">{{ resumen().pendientes }}</p>
+      <p class="text-sm text-[var(--muted)]">Sin técnico asignado</p>
+    </div>
+
+    <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
+      <div class="mb-2 flex h-10 w-10 items-center justify-center rounded-xl bg-sky-50">
+        <i class="fa-solid fa-user-check text-sky-600"></i>
+      </div>
+      <p class="text-2xl font-extrabold text-[var(--text)]">{{ resumen().asignados }}</p>
+      <p class="text-sm text-[var(--muted)]">Esperando inspección</p>
+    </div>
+
+    <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
+      <div class="mb-2 flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50">
+        <i class="fa-solid fa-clipboard-check text-emerald-600"></i>
+      </div>
+      <p class="text-2xl font-extrabold text-[var(--text)]">{{ resumen().inspeccionados }}</p>
+      <p class="text-sm text-[var(--muted)]">Inspeccionados</p>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="flex flex-wrap items-center gap-3 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
+
+    <div class="flex flex-wrap gap-1 rounded-xl bg-[var(--surface-muted)] p-1">
+      @for (v of vistas; track v.clave) {
+        <button type="button" (click)="vista.set(v.clave)"
+          class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition"
+          [class]="vista() === v.clave
+                    ? 'bg-[var(--surface)] text-[var(--primary)] shadow-sm'
+                    : 'text-[var(--muted)] hover:text-[var(--text)]'">
+          <i class="fa-solid {{ v.icono }} text-xs"></i>
+          {{ v.texto }}
+        </button>
+      }
+    </div>
+
+    <div class="relative min-w-[220px] flex-1">
+      <i class="fa-solid fa-magnifying-glass pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-slate-400"></i>
+      <input type="search" [value]="filtro()" (input)="filtro.set($any($event.target).value)"
+        placeholder="Buscar por código, denunciante, dirección o barrio"
+        class="h-11 w-full rounded-xl border border-[var(--border)] bg-slate-50/70 pl-11 pr-4 text-sm outline-none
+               transition focus:border-[var(--primary)] focus:bg-white focus:ring-4 focus:ring-[var(--primary)]/10" />
+    </div>
+  </div>
+
+  <!-- Tabla -->
+  <app-tramites-tabla
+    [tramites]="visibles()"
+    [cargando]="cargando()"
+    [puedeAsignar]="puedeAsignar()"
+    [puedeInspeccionar]="puedeInspeccionar()"
+    vacioTitulo="No hay trámites en esta vista"
+    vacioTexto="Cambia de pestaña o registra una nueva denuncia."
+    (verDetalle)="verDetalle($event)"
+    (asignar)="asignar($event)"
+    (inspeccionar)="inspeccionar($event)"
+    [puedeInforme]="puedeInforme()"
+    (informe)="abrirInforme($event)"
+    [puedeBorrar]="puedeBorrar()"
+    (anular)="anular($event)"
+    (borrar)="borrar($event)" />
+</div>
+
+<!-- Dialogo de asignacion: se resuelve sin salir de la lista -->
+<app-asignar-tecnico
+  [tramite]="asignando()"
+  (cerrado)="asignando.set(null)"
+  (asignado)="trasAsignar()" />

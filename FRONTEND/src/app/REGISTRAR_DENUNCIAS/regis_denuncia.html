@@ -1,0 +1,573 @@
+<form [formGroup]="denunciaForm">
+
+    <div class="background">
+
+        <div class="container">
+
+            <div class="header">
+
+                <div class="header-titulo">
+
+                    <!-- El formulario es largo: obligar a bajar hasta el final
+                         solo para salir es un viaje de ida y vuelta inutil. -->
+                    <button
+                        type="button"
+                        class="btn-atras"
+                        title="Volver"
+                        (click)="volver()">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span>Volver</span>
+                    </button>
+
+                    <h1>Registro de denuncia</h1>
+
+                </div>
+
+                <div class="header-acciones">
+
+                    <button
+                        type="button"
+                        class="btn-ayuda"
+                        title="¿Cómo lleno este formulario?"
+                        (click)="mostrarAyuda()">
+                        <i class="fa-solid fa-circle-question"></i>
+                        <span>Ayuda</span>
+                    </button>
+
+                    <div class="codigo" title="Código que tendrá la denuncia">
+                        <i class="fa-solid fa-hashtag"></i>
+                        {{ codigoPreview }}
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="contenido">
+
+                <!-- IZQUIERDA -->
+
+                <!-- Resumen de lo que falta: en un formulario de 13 campos,
+                     decir solo "complete los campos" no ayuda. -->
+                @if (intentoEnvio() && camposFaltantes().length > 0) {
+                    <div class="resumen-errores" role="alert">
+                        <p class="resumen-titulo">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            Faltan {{ camposFaltantes().length }} datos para poder registrar la denuncia
+                        </p>
+                        <ul>
+                            @for (campo of camposFaltantes(); track campo) {
+                                <li>{{ campo }}</li>
+                            }
+                        </ul>
+                    </div>
+                }
+
+                <div class="columna">
+
+                    <div class="campo" [class.campo-invalido]="invalido('nombre')">
+                        <label><i class="fa-solid fa-user" aria-hidden="true"></i> Nombre <span class="obligatorio" title="Obligatorio">*</span></label>
+
+                        <input
+                            type="text"
+                            formControlName="nombre"
+                            placeholder="Escriba su nombre">
+                    
+                        @if (invalido('nombre')) {
+                            <p class="mensaje-campo" role="alert">
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                                {{ mensajeError('nombre') }}
+                            </p>
+                        }
+                    </div>
+
+                    <div class="campo" [class.campo-invalido]="invalido('apellido')">
+                        <label><i class="fa-solid fa-user" aria-hidden="true"></i> Apellido <span class="obligatorio" title="Obligatorio">*</span></label>
+
+                        <input
+                            type="text"
+                            formControlName="apellido"
+                            placeholder="Escriba su apellido">
+                    
+                        @if (invalido('apellido')) {
+                            <p class="mensaje-campo" role="alert">
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                                {{ mensajeError('apellido') }}
+                            </p>
+                        }
+                    </div>
+
+                    <div class="campo" [class.campo-invalido]="invalido('cedula')">
+                        <label><i class="fa-solid fa-id-card" aria-hidden="true"></i> Cédula <span class="obligatorio" title="Obligatorio">*</span></label>
+
+                        <input
+                            type="text"
+                            formControlName="cedula"
+                            placeholder="Escriba su cédula">
+                    
+                        @if (invalido('cedula')) {
+                            <p class="mensaje-campo" role="alert">
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                                {{ mensajeError('cedula') }}
+                            </p>
+                        }
+                    </div>
+
+                    <div class="campo" [class.campo-invalido]="invalido('direccion')">
+                        <label><i class="fa-solid fa-location-dot" aria-hidden="true"></i> Dirección <span class="obligatorio" title="Obligatorio">*</span></label>
+
+                        <input
+                            type="text"
+                            formControlName="direccion"
+                            placeholder="Escriba su dirección">
+                    
+                        @if (invalido('direccion')) {
+                            <p class="mensaje-campo" role="alert">
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                                {{ mensajeError('direccion') }}
+                            </p>
+                        }
+                    </div>
+
+                    <div class="campo" [class.campo-invalido]="invalido('referencia')">
+                        <label><i class="fa-solid fa-signs-post" aria-hidden="true"></i> Referencia <span class="obligatorio" title="Obligatorio">*</span></label>
+
+                        <input
+                            type="text"
+                            formControlName="referencia"
+                            placeholder="Escriba una referencia">
+                    
+                        @if (invalido('referencia')) {
+                            <p class="mensaje-campo" role="alert">
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                                {{ mensajeError('referencia') }}
+                            </p>
+                        }
+                    </div>
+
+                    <div class="campo" [class.campo-invalido]="invalido('adminZonal')">
+
+                        <label><i class="fa-solid fa-city" aria-hidden="true"></i> Administración Zonal <span class="obligatorio" title="Obligatorio">*</span></label>
+
+                        <app-select-buscador
+                            formControlName="adminZonal"
+                            [opciones]="adminZonales"
+                            placeholder="Busca la administración zonal">
+                        </app-select-buscador>
+
+                    
+                        @if (invalido('adminZonal')) {
+                            <p class="mensaje-campo" role="alert">
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                                {{ mensajeError('adminZonal') }}
+                            </p>
+                        }
+                    </div>
+
+                    <div class="campo" [class.campo-invalido]="invalido('parroquia')">
+
+                        <label><i class="fa-solid fa-map-location-dot" aria-hidden="true"></i> Parroquia <span class="obligatorio" title="Obligatorio">*</span></label>
+
+                        <app-select-buscador
+                            formControlName="parroquia"
+                            [opciones]="parroquias"
+                            [placeholder]="parroquias.length ? 'Busca la parroquia' : 'Primero elige la administración zonal'">
+                        </app-select-buscador>
+
+                    
+                        @if (invalido('parroquia')) {
+                            <p class="mensaje-campo" role="alert">
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                                {{ mensajeError('parroquia') }}
+                            </p>
+                        }
+                    </div>
+
+                    <div class="campo" [class.campo-invalido]="invalido('barrio')">
+
+                        <label><i class="fa-solid fa-house-chimney" aria-hidden="true"></i> Barrio <span class="obligatorio" title="Obligatorio">*</span></label>
+
+                        <app-select-buscador
+                            formControlName="barrio"
+                            [opciones]="barrios"
+                            [placeholder]="barrios.length ? 'Busca el barrio' : 'Primero elige la parroquia'">
+                        </app-select-buscador>
+
+                    
+                        @if (invalido('barrio')) {
+                            <p class="mensaje-campo" role="alert">
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                                {{ mensajeError('barrio') }}
+                            </p>
+                        }
+                    </div>
+
+                    <div class="campo">
+
+                        <label><i class="fa-solid fa-bug" aria-hidden="true"></i> Especie</label>
+
+                        <div class="checks">
+
+                            <label
+                                *ngFor="let especie of especies">
+
+                                <input
+                                    type="checkbox"
+                                    [checked]="especiesSeleccionadas.value.includes(especie.id)"
+                                    (change)="seleccionarEspecie($event, especie.id)">
+
+                                {{ especie.nombre }}
+
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                    <div class="campo">
+
+                        <label><i class="fa-solid fa-map" aria-hidden="true"></i> Mapa</label>
+
+                        <select formControlName="modoMapa">
+
+                            <option value="Mapa">
+                                Mapa
+                            </option>
+
+                            <option value="Coordenadas">
+                                Coordenadas
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div
+                        class="campo"
+                        *ngIf="denunciaForm.get('modoMapa')?.value === 'Coordenadas'">
+
+                        <label><i class="fa-solid fa-arrows-up-down" aria-hidden="true"></i> Latitud</label>
+
+                        <input
+                            type="text"
+                            formControlName="latitud"
+                            placeholder="Ingrese la latitud">
+
+                    </div>
+
+                    <div
+                        class="campo"
+                        *ngIf="denunciaForm.get('modoMapa')?.value === 'Coordenadas'">
+
+                        <label><i class="fa-solid fa-arrows-left-right" aria-hidden="true"></i> Longitud</label>
+
+                        <input
+                            type="text"
+                            formControlName="longitud"
+                            placeholder="Ingrese la longitud">
+
+                    </div>
+
+                    <div class="mapa">
+
+                        <!-- Buscar por direccion evita tener que encontrar el
+                             punto a mano en el mapa, que es lo unico que habia. -->
+                        <div class="lienzo-mapa">
+
+                        <div class="buscador-mapa">
+                            <div class="buscador-campo">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input
+                                    type="search"
+                                    [(ngModel)]="textoBusqueda"
+                                    [ngModelOptions]="{ standalone: true }"
+                                    (keydown.enter)="$event.preventDefault(); buscarDireccion()"
+                                    placeholder="Busca una calle, barrio o referencia">
+                                @if (textoBusqueda) {
+                                    <button type="button" (click)="limpiarBusqueda()" aria-label="Limpiar">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                }
+                            </div>
+
+                            <button type="button" class="btn-buscar"
+                                (click)="buscarDireccion()" [disabled]="buscandoDireccion">
+                                @if (buscandoDireccion) {
+                                    <i class="fa-solid fa-circle-notch fa-spin"></i>
+                                } @else {
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                }
+                                Buscar
+                            </button>
+
+                            <button type="button" class="btn-ubicacion" title="Usar mi ubicación"
+                                (click)="usarMiUbicacion()" [disabled]="buscandoDireccion">
+                                <i class="fa-solid fa-location-crosshairs"></i>
+                            </button>
+                        </div>
+
+                        @if (resultadosBusqueda.length > 1) {
+                            <ul class="resultados-busqueda">
+                                @for (r of resultadosBusqueda; track r.place_id) {
+                                    <li>
+                                        <button type="button" (click)="elegirResultado(r)">
+                                            <i class="fa-solid fa-location-dot"></i>
+                                            {{ nombreCorto(r) }}
+                                        </button>
+                                    </li>
+                                }
+                            </ul>
+                        }
+
+
+                        <div
+                            #map
+                            class="map-container">
+                        </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="map-info">
+                        <p>
+                            <i class="fa-solid fa-hand-pointer"></i>
+                            Pulsa en el mapa para marcar el lugar y arrastra el marcador para
+                            ajustarlo. La posición se guarda automáticamente.
+                        </p>
+                        <p class="map-coords" *ngIf="latitudSeleccionada !== null && longitudSeleccionada !== null">
+                            <i class="fa-solid fa-location-crosshairs"></i>
+                            Lat: {{ latitudSeleccionada | number:'1.6-6' }}, Lng: {{ longitudSeleccionada | number:'1.6-6' }}
+                        </p>
+                    </div>
+
+                </div>
+
+                <!-- DERECHA -->
+
+                <div class="columna">
+
+                    <div class="campo" [class.campo-invalido]="invalido('tipoDenunciante')">
+
+                        <label><i class="fa-solid fa-user-tag" aria-hidden="true"></i> Tipo de Denunciante <span class="obligatorio" title="Obligatorio">*</span></label>
+
+                        <app-select-buscador
+                            formControlName="tipoDenunciante"
+                            [opciones]="tiposDenunciante"
+                            placeholder="Seleccione el tipo">
+                        </app-select-buscador>
+
+                    
+                        @if (invalido('tipoDenunciante')) {
+                            <p class="mensaje-campo" role="alert">
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                                {{ mensajeError('tipoDenunciante') }}
+                            </p>
+                        }
+                    </div>
+
+                    @if (requiereDependencia()) {
+                    <div class="campo" [class.campo-invalido]="invalido('dependencia')">
+
+                        <label><i class="fa-solid fa-sitemap" aria-hidden="true"></i> Dependencia</label>
+
+                        <app-select-buscador
+                            formControlName="dependencia"
+                            [opciones]="dependencias"
+                            placeholder="Busca la dependencia">
+                        </app-select-buscador>
+
+                    
+                        @if (invalido('dependencia')) {
+                            <p class="mensaje-campo" role="alert">
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                                {{ mensajeError('dependencia') }}
+                            </p>
+                        }
+                    </div>
+                    }
+
+                    <div class="campo" [class.campo-invalido]="invalido('predio')">
+
+                        <label><i class="fa-solid fa-building" aria-hidden="true"></i> Predio <span class="obligatorio" title="Obligatorio">*</span></label>
+
+                        <app-select-buscador
+                            formControlName="predio"
+                            [opciones]="predios"
+                            placeholder="Seleccione el predio">
+                        </app-select-buscador>
+
+                    
+                        @if (invalido('predio')) {
+                            <p class="mensaje-campo" role="alert">
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                                {{ mensajeError('predio') }}
+                            </p>
+                        }
+                    </div>
+
+                    <div class="campo campo-imagenes">
+
+                        <label>
+                            <i class="fa-solid fa-images"></i>
+                            Imágenes
+                            <span class="opcional">opcional</span>
+                        </label>
+
+                        <input
+                            #inputImagen
+                            type="file"
+                            hidden
+                            accept="image/*"
+                            multiple
+                            (change)="seleccionarImagen($event)">
+
+                        <button
+                            type="button"
+                            class="zona-carga"
+                            [class.arrastrando]="arrastrandoImagen"
+                            [disabled]="rutasImagenes.length >= maxImagenes"
+                            (click)="inputImagen.click()"
+                            (dragover)="alArrastrar($event)"
+                            (dragleave)="alSalirArrastre($event)"
+                            (drop)="alSoltar($event)">
+
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+
+                            <span class="zona-titulo">
+                                @if (rutasImagenes.length >= maxImagenes) {
+                                    Llegaste al máximo de {{ maxImagenes }} imágenes
+                                } @else {
+                                    Arrastra tus fotos aquí o pulsa para elegirlas
+                                }
+                            </span>
+
+                            <span class="zona-pista">
+                                JPG, PNG o WEBP · hasta {{ maxImagenes }} imágenes · 5 MB cada una
+                            </span>
+
+                            @if (rutasImagenes.length > 0) {
+                                <span class="zona-conteo">
+                                    <i class="fa-solid fa-circle-check"></i>
+                                    {{ rutasImagenes.length }} de {{ maxImagenes }} seleccionadas
+                                </span>
+                            }
+
+                        </button>
+
+                        @if (progreso !== null) {
+                            <div class="progreso">
+                                <div
+                                    class="progreso-barra"
+                                    role="progressbar"
+                                    [attr.aria-valuenow]="progreso"
+                                    aria-valuemin="0"
+                                    aria-valuemax="100">
+                                    <div class="progreso-relleno" [style.width.%]="progreso"></div>
+                                </div>
+                                <p class="progreso-texto">
+                                    <i class="fa-solid fa-circle-notch fa-spin"></i>
+                                    {{ mensajeProgreso }} {{ progreso }}%
+                                </p>
+                            </div>
+                        }
+
+                    </div>
+
+                    <div class="preview-imagen" [class.vacia]="previewsImagenes.length === 0">
+
+                        @if (previewsImagenes.length === 0) {
+                            <div class="preview-empty">
+                                <i class="fa-regular fa-image"></i>
+                                <span>Todavía no hay imágenes. Son opcionales, pero ayudan mucho al técnico.</span>
+                            </div>
+                        }
+
+                        @for (imagen of previewsImagenes; track imagen; let i = $index) {
+
+                            <figure class="preview-item">
+
+                                <div class="preview-lienzo">
+                                    @if (imagen.url) {
+                                        <img [src]="imagen.url" [alt]="imagen.nombre">
+                                    } @else {
+                                        <i class="fa-solid fa-circle-notch fa-spin"></i>
+                                    }
+                                </div>
+
+                                <figcaption>
+                                    <span class="preview-nombre" [title]="imagen.nombre">{{ imagen.nombre }}</span>
+                                    <span class="preview-peso">{{ imagen.peso }}</span>
+                                </figcaption>
+
+                                <button
+                                    type="button"
+                                    class="preview-quitar"
+                                    [attr.aria-label]="'Quitar ' + imagen.nombre"
+                                    title="Quitar"
+                                    (click)="eliminarImagen(i)">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+
+                            </figure>
+                        }
+
+                    </div>
+
+                    <div class="campo" [class.campo-invalido]="invalido('narracion')">
+
+                        <label><i class="fa-solid fa-align-left" aria-hidden="true"></i> Narración <span class="obligatorio" title="Obligatorio">*</span></label>
+
+                        <textarea
+                            formControlName="narracion"
+                            maxlength="500"
+                            placeholder="Ingrese una narración de los hechos (máx 500 caracteres)">
+                        </textarea>
+
+                        <small>
+                            {{
+                                denunciaForm.get('narracion')?.value?.length || 0
+                            }}/500
+                        </small>
+
+                    
+                        @if (invalido('narracion')) {
+                            <p class="mensaje-campo" role="alert">
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                                {{ mensajeError('narracion') }}
+                            </p>
+                        }
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="botones">
+
+                <button
+                    type="button"
+                    class="btn-volver"
+                    (click)="volver()">
+
+                    VOLVER
+
+                </button>
+
+                <button
+                    type="button"
+                    class="btn-guardar"
+                    [disabled]="cargando"
+                    (click)="guardarDenuncia()">
+
+                    {{ cargando ? 'GUARDANDO...' : 'ENVIAR DENUNCIA' }}
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</form>

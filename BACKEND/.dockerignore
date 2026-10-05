@@ -1,0 +1,7 @@
+target/
+.git/
+.github/
+.vscode/
+docker/
+*.log
+jshell.history

@@ -1,0 +1,300 @@
+@import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+@import "ngx-toastr/toastr";
+
+/* ==========================================================================
+   Paleta de SIGUBA
+   ==========================================================================
+
+   Un solo sitio donde vive el color. Antes cada componente traia sus propios
+   tonos sueltos en su .css: cambiar el azul obligaba a buscarlo en seis
+   archivos y siempre quedaba uno sin cambiar.
+
+   Los nombres dicen que papel cumple el color, no como se ve. Al anadir uno,
+   la pregunta es «para que sirve». Si no encaja en ninguno de estos,
+   probablemente sobre.
+   ========================================================================== */
+
+:root {
+  /* --- Marca ------------------------------------------------------------ */
+  --primary: #1d4ed8;
+  --primary-dark: #1e3a8a;
+
+  /** Fondo de lo seleccionado, de los avisos informativos y de los iconos. */
+  --primary-soft: #eff6ff;
+
+  /** Borde de eso mismo: contorno tenue sobre --primary-soft. */
+  --primary-border: #dbeafe;
+
+  /* --- Identidad del Municipio de Quito --------------------------------- */
+  --mdmq-azul: #0b3b8c;
+  --mdmq-celeste: #1275bb;
+  --mdmq-rojo: #d92d20;
+  --mdmq-verde: #12805c;
+
+  /* --- Superficies ------------------------------------------------------ */
+
+  /** Fondo de la pagina. */
+  --background: #f4f7fb;
+
+  /** Fondo de una tarjeta, una tabla o un dialogo. */
+  --surface: #ffffff;
+
+  /** Fondo de encabezados de tabla y zonas en segundo plano. */
+  --surface-muted: #f8fafc;
+
+  /** Separadores muy tenues dentro de una tarjeta. */
+  --surface-line: #f1f5f9;
+
+  /* --- Texto ------------------------------------------------------------ */
+
+  /** Texto principal. */
+  --text: #172030;
+
+  /** Texto secundario: descripciones, etiquetas, ayudas. */
+  --muted: #64748b;
+
+  /** Texto sobre fondos de color. */
+  --on-primary: #ffffff;
+
+  /* --- Bordes ----------------------------------------------------------- */
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+
+  /* --- Estados ---------------------------------------------------------- */
+  --success: #12805c;
+  --success-soft: #ecfdf5;
+  --warning: #b45309;
+  --warning-soft: #fffbeb;
+  --danger: #d92d20;
+  --danger-soft: #fef2f2;
+  --info: #1275bb;
+  --info-soft: #eff8ff;
+
+  /* --- Sombras ---------------------------------------------------------- */
+  --shadow-sm: 0 1px 2px rgb(15 23 42 / 0.06);
+  --shadow: 0 4px 16px rgb(15 23 42 / 0.08);
+  --shadow-lg: 0 12px 32px rgb(15 23 42 / 0.12);
+
+  /* --- Medidas del armazon ---------------------------------------------- */
+  --sidebar-width: 17.5rem;
+  --header-height: 4rem;
+}
+
+/* Tailwind necesita conocer los tokens para poder usarlos como utilidades
+   (bg-primary, text-muted, border-border...). */
+@theme inline {
+  --color-primary: var(--primary);
+  --color-primary-dark: var(--primary-dark);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-border: var(--primary-border);
+
+  --color-mdmq-azul: var(--mdmq-azul);
+  --color-mdmq-celeste: var(--mdmq-celeste);
+  --color-mdmq-rojo: var(--mdmq-rojo);
+
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-surface-line: var(--surface-line);
+
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-info: var(--info);
+}
+
+/* --- Base ----------------------------------------------------------------- */
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--text);
+  font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   Formularios
+   ==========================================================================
+
+   Las mismas ocho clases de Tailwind se repetian en cada input de cada
+   formulario. Aqui van una vez: `.entrada` es cualquier campo de texto, select
+   o textarea, y las variantes de estado las pone el componente app-campo.
+   ========================================================================== */
+
+.entrada {
+  width: 100%;
+  height: 3rem;
+  padding: 0 0.875rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--surface-muted) 70%, transparent);
+  color: var(--text);
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 150ms, background-color 150ms, box-shadow 150ms;
+}
+
+/* Con icono a la izquierda hay que dejarle sitio. */
+.entrada.con-icono {
+  padding-left: 2.75rem;
+}
+
+/* Con boton a la derecha (ojo de contrasena, etc.). */
+.entrada.con-accion {
+  padding-right: 3rem;
+}
+
+.entrada::placeholder {
+  color: #94a3b8;
+}
+
+.entrada:hover:not(:disabled) {
+  border-color: var(--border-strong);
+}
+
+.entrada:focus {
+  border-color: var(--primary);
+  background: var(--surface);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 12%, transparent);
+}
+
+.entrada:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+textarea.entrada {
+  height: auto;
+  min-height: 6rem;
+  padding: 0.75rem 0.875rem;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+select.entrada {
+  cursor: pointer;
+  appearance: none;
+  /* Espacio para la flecha propia; sin esto el texto la pisa. */
+  padding-right: 2.5rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%2364748b'%3E%3Cpath d='M4.5 6.5 8 10l3.5-3.5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.875rem center;
+  background-size: 1rem;
+}
+
+/* Estado de error puesto directamente sobre el input, cuando no hay app-campo
+   alrededor (el login, que tiene su propia maquetacion). */
+.entrada.campo-error {
+  border-color: #f87171;
+  background: color-mix(in srgb, var(--danger-soft) 60%, transparent);
+}
+
+.entrada.campo-error:focus {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--danger) 12%, transparent);
+}
+
+/* Estados que marca app-campo alrededor del input. */
+.campo-fallo .entrada {
+  border-color: #f87171;
+  background: color-mix(in srgb, var(--danger-soft) 60%, transparent);
+}
+
+.campo-fallo .entrada:focus {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--danger) 12%, transparent);
+}
+
+/* Deja sitio al tic de validado. */
+.campo-correcto .entrada:not(.con-accion) {
+  padding-right: 2.5rem;
+}
+
+/* Icono decorativo dentro del campo. */
+.icono-campo {
+  position: absolute;
+  /* Por encima del campo: app-select-buscador es un elemento posicionado y lo tapaba. */
+  z-index: 1;
+  left: 0.9375rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 0.875rem;
+  color: #94a3b8;
+}
+
+/* Boton dentro del campo (mostrar contrasena, limpiar...). */
+.accion-campo {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.5rem;
+  color: #94a3b8;
+  transition: background-color 150ms, color 150ms;
+}
+
+.accion-campo:hover {
+  background: var(--surface-muted);
+  color: var(--primary);
+}
+
+/* =========================================================
+   Fichas de ayuda (SweetAlert)
+
+   El dialogo se monta fuera del componente, asi que su
+   contenido no puede estilarse desde el CSS de la pantalla.
+   ========================================================= */
+
+.lista-ayuda {
+  margin: 0;
+  /* Tailwind quita los marcadores en su reset: aqui los numeros son la guia
+     de los pasos, asi que se restituyen explicitamente. */
+  list-style: decimal outside;
+  padding-left: 1.25rem;
+  text-align: left;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--text, #0f172a);
+}
+
+.lista-ayuda li {
+  margin-bottom: 0.625rem;
+}
+
+.lista-ayuda li::marker {
+  color: var(--primary, #2563eb);
+  font-weight: 700;
+}
+
+.nota-ayuda {
+  margin: 0.875rem 0 0;
+  padding: 0.625rem 0.75rem;
+  border-radius: 0.75rem;
+  background: var(--surface-muted, #f1f5f9);
+  text-align: left;
+  font-size: 0.8125rem;
+  color: var(--muted, #64748b);
+}

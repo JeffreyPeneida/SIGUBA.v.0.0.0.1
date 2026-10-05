@@ -1,0 +1,508 @@
+<form [formGroup]="inspeccionForm">
+
+  <div class="background">
+    <div class="container">
+
+      <!-- ENCABEZADO DENUNCIA -->
+      <div class="header">
+
+        <div class="header-titulo">
+
+          <!-- La ficha es larga: bajar hasta el final solo para salir era un
+               viaje de ida y vuelta inutil. -->
+          <button type="button" class="btn-atras" title="Volver" (click)="volver()">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span>Volver</span>
+          </button>
+
+          <h1>Registro de Denuncia</h1>
+
+        </div>
+
+        <div class="header-acciones">
+
+          <button type="button" class="btn-ayuda" title="¿Cómo registro la inspección?"
+                  (click)="mostrarAyuda()">
+            <i class="fa-solid fa-circle-question"></i>
+            <span>Ayuda</span>
+          </button>
+
+          <div class="codigo" title="Código del trámite">
+            <i class="fa-solid fa-hashtag"></i>
+            {{ codigoDenuncia }}
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="tecnico-row">
+        Técnico Asignado: <strong>{{ tecnicoAsignado }}</strong>
+      </div>
+
+      <!-- DATOS DE LA DENUNCIA (solo lectura) -->
+      <div class="contenido">
+
+        <div class="columna">
+          <div class="campo-lectura">
+            <label><i class="fa-solid fa-user" aria-hidden="true"></i> Nombre</label>
+            <span>{{ denuncia?.nombre }}</span>
+          </div>
+          <div class="campo-lectura">
+            <label><i class="fa-solid fa-id-card" aria-hidden="true"></i> Cédula</label>
+            <span>{{ denuncia?.cedula }}</span>
+          </div>
+          <div class="campo-lectura">
+            <label><i class="fa-solid fa-city" aria-hidden="true"></i> Administración Zonal</label>
+            <span>{{ denuncia?.adminZonal }}</span>
+          </div>
+          <div class="campo-lectura">
+            <label><i class="fa-solid fa-map-location-dot" aria-hidden="true"></i> Parroquia</label>
+            <span>{{ denuncia?.parroquia }}</span>
+          </div>
+          <div class="campo-lectura">
+            <label><i class="fa-solid fa-bug" aria-hidden="true"></i> Especie</label>
+            <span>{{ denuncia?.especie }}</span>
+          </div>
+          <div class="campo-lectura">
+            <label><i class="fa-solid fa-user-tag" aria-hidden="true"></i> Tipo de Denunciante</label>
+            <span>{{ denuncia?.tipoDenunciante }}</span>
+          </div>
+          <div class="campo-lectura">
+            <label><i class="fa-solid fa-sitemap" aria-hidden="true"></i> Dependencia</label>
+            <span>{{ denuncia?.dependencia }}</span>
+          </div>
+          <div class="campo-lectura">
+            <label><i class="fa-solid fa-building" aria-hidden="true"></i> Predio</label>
+            <span>{{ denuncia?.predio }}</span>
+          </div>
+        </div>
+
+        <div class="columna">
+          <div class="campo-lectura">
+            <label><i class="fa-solid fa-user" aria-hidden="true"></i> Apellido</label>
+            <span>{{ denuncia?.apellido }}</span>
+          </div>
+          <div class="campo-lectura">
+            <label><i class="fa-solid fa-location-dot" aria-hidden="true"></i> Dirección</label>
+            <span>{{ denuncia?.direccion }}</span>
+          </div>
+          <div class="campo-lectura">
+            <label><i class="fa-solid fa-signs-post" aria-hidden="true"></i> Referencia</label>
+            <span>{{ denuncia?.referencia }}</span>
+          </div>
+          <div class="campo-lectura">
+            <label><i class="fa-solid fa-house-chimney" aria-hidden="true"></i> Barrio</label>
+            <span>{{ denuncia?.barrio }}</span>
+          </div>
+          <div class="campo-lectura narr">
+            <label><i class="fa-solid fa-align-left" aria-hidden="true"></i> Narración</label>
+            <span>{{ denuncia?.narracion }}</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- MAPA E IMAGEN DE DENUNCIA -->
+      <div class="img-section">
+        <div class="img-group">
+          <label><i class="fa-solid fa-map" aria-hidden="true"></i> Mapa</label>
+          <!-- Mapa de solo lectura con la ubicacion denunciada. Antes era un
+               div con la palabra "Mapa" dentro: nunca se implemento. -->
+          <div #mapaDetalle class="img-box mapa-detalle"></div>
+          @if (!denuncia?.latitud || !denuncia?.longitud) {
+            <p class="sin-mapa">
+              <i class="fa-solid fa-location-dot"></i>
+              La denuncia no registró coordenadas.
+            </p>
+          }
+        </div>
+        <div class="img-group">
+          <label><i class="fa-solid fa-image" aria-hidden="true"></i> Imagen de denuncia</label>
+          <div class="img-box img-denuncia">
+            <img
+              *ngFor="let img of denuncia?.imagenes"
+              [src]="img"
+              alt="Imagen denuncia">
+          </div>
+        </div>
+      </div>
+
+      <!-- LATITUD Y LONGITUD -->
+      <div class="campo-lectura">
+        <label><i class="fa-solid fa-arrows-up-down" aria-hidden="true"></i> Latitud</label>
+        <span>{{ denuncia?.latitud }}</span>
+      </div>
+      <div class="campo-lectura">
+        <label><i class="fa-solid fa-arrows-left-right" aria-hidden="true"></i> Longitud</label>
+        <span>{{ denuncia?.longitud }}</span>
+      </div>
+
+      <hr class="separador">
+
+      <!-- REGISTRO DE INSPECCIÓN -->
+      <div class="header-inspeccion">
+        <h2>Registro De Inspección</h2>
+        <span>Fecha de Inspección: {{ fechaInspeccion }}</span>
+      </div>
+
+      <!-- CAMPOS EDITABLES DE INSPECCIÓN -->
+      <div class="contenido">
+
+        <div class="columna">
+
+          <div class="campo">
+            <label><i class="fa-solid fa-calendar-day" aria-hidden="true"></i> Fecha de Asignación</label>
+            <span class="valor-asignacion">{{ fechaAsignacion }}</span>
+          </div>
+
+          <div class="campo">
+            <label><i class="fa-solid fa-vector-square" aria-hidden="true"></i> Área de Inspección</label>
+            <app-select-buscador
+                formControlName="areaInspeccion"
+                [opciones]="areasInspeccion"
+                placeholder="Seleccione el área">
+            </app-select-buscador>
+          </div>
+
+          <div class="campo">
+            <label><i class="fa-solid fa-clipboard-question" aria-hidden="true"></i> Motivo de Inspección</label>
+            <app-select-buscador
+                formControlName="motivoInspeccion"
+                [opciones]="motivosInspeccion"
+                placeholder="Seleccione el motivo">
+            </app-select-buscador>
+          </div>
+
+        </div>
+
+        <div class="columna">
+
+          <div class="campo">
+            <label><i class="fa-solid fa-clock" aria-hidden="true"></i> Hora de Inspección</label>
+            <input
+              type="time"
+              formControlName="horaInspeccion">
+          </div>
+
+          <div class="campo">
+            <label><i class="fa-solid fa-flask" aria-hidden="true"></i> Tipo de Rodenticida</label>
+            <app-select-buscador
+                formControlName="tipoRodenticida"
+                [opciones]="tiposRodenticida"
+                placeholder="Seleccione el rodenticida">
+            </app-select-buscador>
+          </div>
+
+          <div class="campo">
+            <label><i class="fa-solid fa-weight-scale" aria-hidden="true"></i> Cantidad de Rodenticida</label>
+            <input
+              type="text"
+              formControlName="cantidadRodenticida"
+              placeholder="Ingrese la cantidad">
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- DESCRIPCIÓN -->
+      <div class="campo">
+        <label><i class="fa-solid fa-align-left" aria-hidden="true"></i> Descripción</label>
+        <textarea
+          formControlName="descripcion"
+          rows="5"
+          placeholder="Realice una descripción de la inspección realizada.">
+        </textarea>
+      </div>
+
+      <!-- IMAGEN DE INSPECCIÓN -->
+      <div class="campo campo-imagenes">
+
+        <label>
+          <i class="fa-solid fa-camera"></i>
+          Imágenes de la inspección
+          <span class="opcional">opcional</span>
+        </label>
+
+        <input
+          #inputImagenIns
+          type="file"
+          hidden
+          accept="image/*"
+          multiple
+          (change)="seleccionarImagenInspeccion($event)">
+
+        <button
+          type="button"
+          class="zona-carga"
+          [class.arrastrando]="arrastrandoImagen"
+          [disabled]="rutasImagenesIns.length >= maxImagenes"
+          (click)="inputImagenIns.click()"
+          (dragover)="alArrastrar($event)"
+          (dragleave)="alSalirArrastre($event)"
+          (drop)="alSoltar($event)">
+
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+
+          <span class="zona-titulo">
+            @if (rutasImagenesIns.length >= maxImagenes) {
+              Llegaste al máximo de {{ maxImagenes }} imágenes
+            } @else {
+              Arrastra las fotos de la visita o pulsa para elegirlas
+            }
+          </span>
+
+          <span class="zona-pista">
+            JPG, PNG o WEBP · hasta {{ maxImagenes }} imágenes · 5 MB cada una
+          </span>
+
+          @if (rutasImagenesIns.length > 0) {
+            <span class="zona-conteo">
+              <i class="fa-solid fa-circle-check"></i>
+              {{ rutasImagenesIns.length }} de {{ maxImagenes }} seleccionadas
+            </span>
+          }
+
+        </button>
+
+        @if (progreso !== null) {
+          <div class="progreso">
+            <div class="progreso-barra" role="progressbar"
+                 [attr.aria-valuenow]="progreso" aria-valuemin="0" aria-valuemax="100">
+              <div class="progreso-relleno" [style.width.%]="progreso"></div>
+            </div>
+            <p class="progreso-texto">
+              <i class="fa-solid fa-circle-notch fa-spin"></i>
+              {{ mensajeProgreso }} {{ progreso }}%
+            </p>
+          </div>
+        }
+
+      </div>
+
+      <div class="preview-imagen" [class.vacia]="previewsInspeccion.length === 0">
+
+        @if (previewsInspeccion.length === 0) {
+          <div class="preview-empty">
+            <i class="fa-regular fa-image"></i>
+            <span>Aún no has adjuntado fotos de la visita.</span>
+          </div>
+        }
+
+        @for (img of previewsInspeccion; track img; let i = $index) {
+
+          <figure class="preview-item">
+
+            <div class="preview-lienzo">
+              @if (img.url) {
+                <img [src]="img.url" [alt]="img.nombre">
+              } @else {
+                <i class="fa-solid fa-circle-notch fa-spin"></i>
+              }
+            </div>
+
+            <figcaption>
+              <span class="preview-nombre" [title]="img.nombre">{{ img.nombre }}</span>
+              <span class="preview-peso">{{ img.peso }}</span>
+            </figcaption>
+
+            <button type="button" class="preview-quitar"
+                    [attr.aria-label]="'Quitar ' + img.nombre"
+                    title="Quitar"
+                    (click)="eliminarImagenInspeccion(i)">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+
+          </figure>
+        }
+
+      </div>
+
+      <!-- TABS: ROEDORES / AVES / CUCARACHAS -->
+      <div class="tabs-container">
+
+        <div class="tab-buttons">
+          <button
+            type="button"
+            class="tab-btn"
+            [class.active]="tabActivo === 'roedores'"
+            (click)="cambiarTab('roedores')">
+            Roedores
+          </button>
+          <button
+            type="button"
+            class="tab-btn"
+            [class.active]="tabActivo === 'aves'"
+            (click)="cambiarTab('aves')">
+            Aves
+          </button>
+          <button
+            type="button"
+            class="tab-btn"
+            [class.active]="tabActivo === 'cucarachas'"
+            (click)="cambiarTab('cucarachas')">
+            Cucarachas
+          </button>
+        </div>
+
+        <!-- TAB ROEDORES -->
+        <div class="tab-panel roedores" *ngIf="tabActivo === 'roedores'">
+          <div class="check-row">
+            <span class="ev-label">Evidencias</span>
+            <label>
+              <input type="checkbox" (change)="toggleEvidencia($event, 'roedores', 'madriguera')">
+              Madriguera
+            </label>
+            <label>
+              <input type="checkbox" (change)="toggleEvidencia($event, 'roedores', 'heces')">
+              Heces
+            </label>
+            <label>
+              <input type="checkbox" (change)="toggleEvidencia($event, 'roedores', 'senderos')">
+              Senderos
+            </label>
+            <label>
+              <input type="checkbox" (change)="toggleEvidencia($event, 'roedores', 'roeduras')">
+              Roeduras
+            </label>
+          </div>
+          <div class="check-row">
+            <label>
+              <input type="checkbox" (change)="toggleEvidencia($event, 'roedores', 'otros')">
+              Otros
+            </label>
+            <span class="ev-label">Especifique</span>
+            <input
+              type="text"
+              formControlName="especifqueRoedores"
+              placeholder="Ej: Manchas">
+          </div>
+          <div class="nivel-label">
+            NIVEL DE INFESTACIÓN EN BASE A LA PRESENCIA DE INDICIOS – Método Cualitativo
+          </div>
+          <app-select-buscador
+              formControlName="nivelRoedores"
+              [opciones]="nivelesInfestacion"
+              placeholder="Seleccione el nivel">
+          </app-select-buscador>
+        </div>
+
+        <!-- TAB AVES -->
+        <div class="tab-panel aves" *ngIf="tabActivo === 'aves'">
+          <div class="check-row">
+            <span class="ev-label">Evidencias</span>
+            <label>
+              <input type="checkbox" (change)="toggleEvidencia($event, 'aves', 'nidos')">
+              Nidos
+            </label>
+            <label>
+              <input type="checkbox" (change)="toggleEvidencia($event, 'aves', 'heces')">
+              Heces
+            </label>
+            <label>
+              <input type="checkbox" (change)="toggleEvidencia($event, 'aves', 'plumas')">
+              Plumas
+            </label>
+            <label>
+              <input type="checkbox" (change)="toggleEvidencia($event, 'aves', 'picoteos')">
+              Picoteos
+            </label>
+          </div>
+          <div class="check-row">
+            <label>
+              <input type="checkbox" (change)="toggleEvidencia($event, 'aves', 'otros')">
+              Otros
+            </label>
+            <span class="ev-label">Especifique</span>
+            <input
+              type="text"
+              formControlName="especifqueAves"
+              placeholder="Ej: Manchas">
+          </div>
+          <div class="nivel-label">
+            PRESIÓN POBLACIONAL QUE EJERCEN LAS AVES (palomas/tórtolas)
+          </div>
+          <app-select-buscador
+              formControlName="nivelAves"
+              [opciones]="nivelesInfestacion"
+              placeholder="Seleccione el nivel">
+          </app-select-buscador>
+        </div>
+
+        <!-- TAB CUCARACHAS -->
+        <div class="tab-panel cucarachas" *ngIf="tabActivo === 'cucarachas'">
+          <div class="check-row">
+            <span class="ev-label">Evidencias</span>
+            <label>
+              <input type="checkbox" (change)="toggleEvidencia($event, 'cucarachas', 'ootecas')">
+              Ootecas
+            </label>
+            <label>
+              <input type="checkbox" (change)="toggleEvidencia($event, 'cucarachas', 'cucarachas')">
+              Cucarachas
+            </label>
+          </div>
+          <div class="check-row">
+            <label>
+              <input type="checkbox" (change)="toggleEvidencia($event, 'cucarachas', 'otros')">
+              Otros
+            </label>
+            <span class="ev-label">Especifique</span>
+            <input
+              type="text"
+              formControlName="especifqueCucarachas"
+              placeholder="Ej: Manchas">
+          </div>
+          <div class="nivel-label">
+            NIVEL DE INFESTACIÓN POR CUCARACHAS – Observación directa
+          </div>
+          <app-select-buscador
+              formControlName="nivelCucarachas"
+              [opciones]="nivelesInfestacion"
+              placeholder="Seleccione el nivel">
+          </app-select-buscador>
+        </div>
+
+      </div>
+
+      <!-- CONCLUSIONES Y RECOMENDACIONES -->
+      <div class="campo">
+        <label><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i> Conclusiones</label>
+        <textarea
+          formControlName="conclusiones"
+          rows="4"
+          placeholder="Ingrese las conclusiones de la inspección.">
+        </textarea>
+      </div>
+
+      <div class="campo">
+        <label><i class="fa-solid fa-lightbulb" aria-hidden="true"></i> Recomendaciones</label>
+        <textarea
+          formControlName="recomendaciones"
+          rows="4"
+          placeholder="Ingrese las recomendaciones.">
+        </textarea>
+      </div>
+
+      <!-- BOTONES -->
+      <div class="botones">
+        <button
+          type="button"
+          class="btn-volver"
+          (click)="volver()">
+          VOLVER
+        </button>
+        <button
+          type="button"
+          class="btn-guardar"
+          [disabled]="cargando"
+          (click)="guardarInspeccion()">
+          {{ cargando ? 'GUARDANDO...' : 'GUARDAR' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</form>

@@ -1,0 +1,80 @@
+<header
+  class="flex h-[var(--header-height)] items-center justify-between gap-2
+         rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-3 shadow-sm sm:gap-4 sm:px-6"
+>
+  <!-- Izquierda: menú y título -->
+  <div class="flex min-w-0 items-center gap-3">
+
+    <!-- Abre el cajón; en pantalla ancha el menú es fijo y este botón sobra -->
+    <button
+      type="button"
+      (click)="menu.alternar()"
+      class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--border)]
+             text-[var(--muted)] transition hover:border-[var(--primary)] hover:text-[var(--primary)] xl:hidden"
+      aria-label="Abrir el menú"
+      [attr.aria-expanded]="menu.abierto()"
+    >
+      <i class="fa-solid fa-bars"></i>
+    </button>
+
+    <div class="min-w-0">
+      <p class="truncate text-sm font-semibold text-[var(--text)]">
+        <span class="hidden sm:inline">Sistema de Vigilancia de Plagas Urbanas</span>
+        <span class="sm:hidden">SIGUBA</span>
+      </p>
+      <p class="hidden truncate text-xs text-[var(--muted)] sm:block">Unidad de Bienestar Animal</p>
+    </div>
+  </div>
+
+  <!-- Derecha: usuario -->
+  @if (usuario(); as u) {
+    <div class="relative shrink-0">
+      <button
+        type="button"
+        (click)="alternarMenu()"
+        [attr.aria-expanded]="menuAbierto()"
+        aria-haspopup="menu"
+        class="flex items-center gap-2 rounded-xl px-1.5 py-1.5 transition hover:bg-[var(--surface-muted)] sm:gap-3 sm:px-2"
+      >
+        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--primary-soft)] text-xs font-bold text-[var(--primary)]">
+          {{ iniciales() }}
+        </div>
+
+        <div class="hidden max-w-[12rem] text-left md:block">
+          <p class="truncate text-sm font-semibold leading-tight text-[var(--text)]">
+            {{ u.nombre }} {{ u.apellido }}
+          </p>
+          <p class="truncate text-xs leading-tight text-[var(--muted)]">{{ u.rol }}</p>
+        </div>
+
+        <i class="fa-solid fa-chevron-down text-xs text-[var(--muted)]"></i>
+      </button>
+
+      @if (menuAbierto()) {
+        <div
+          role="menu"
+          class="absolute right-0 z-50 mt-2 w-[min(16rem,calc(100vw-2rem))] overflow-hidden
+                 rounded-xl border border-[var(--border)] bg-[var(--surface)] shadow-lg"
+        >
+          <div class="border-b border-[var(--surface-line)] px-4 py-3">
+            <p class="truncate text-sm font-semibold text-[var(--text)]">{{ u.nombre }} {{ u.apellido }}</p>
+            <p class="truncate text-xs text-[var(--muted)]">{{ u.mail || u.usuario }}</p>
+            <p class="mt-1 inline-flex rounded-full bg-[var(--primary-soft)] px-2 py-0.5 text-[11px] font-bold text-[var(--primary)] md:hidden">
+              {{ u.rol }}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            role="menuitem"
+            (click)="cerrarSesion()"
+            class="flex w-full items-center gap-3 px-4 py-3 text-sm font-medium text-[var(--danger)] transition hover:bg-[var(--danger-soft)]"
+          >
+            <i class="fa-solid fa-right-from-bracket w-4"></i>
+            Cerrar sesión
+          </button>
+        </div>
+      }
+    </div>
+  }
+</header>

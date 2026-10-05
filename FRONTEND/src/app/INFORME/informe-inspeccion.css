@@ -1,0 +1,150 @@
+/* Piezas que se repiten decenas de veces en el formulario del informe. */
+
+.tarjeta {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 1rem;
+  padding: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .tarjeta {
+    padding: 1.5rem;
+  }
+}
+
+/* Mismo azul que las franjas de seccion del informe impreso. */
+.titulo-seccion {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: -0.25rem 0 1rem;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #1a5276;
+}
+
+.titulo-seccion .numero {
+  display: inline-flex;
+  height: 1.6rem;
+  min-width: 1.6rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  background: #1a5276;
+  color: #fff;
+  font-size: 0.75rem;
+}
+
+.etiqueta {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.campo {
+  width: 100%;
+  min-height: 2.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--surface-muted);
+  padding: 0.55rem 0.9rem;
+  font-size: 0.875rem;
+  color: var(--text);
+  outline: none;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s,
+    background 0.15s;
+}
+
+.campo:focus {
+  border-color: var(--primary);
+  background: var(--surface);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 12%, transparent);
+}
+
+.campo:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
+textarea.campo {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.boton-icono {
+  display: inline-flex;
+  height: 2.25rem;
+  width: 2.25rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.6rem;
+  color: var(--muted);
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.boton-icono:hover:not(:disabled) {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.boton-icono.neutro:hover:not(:disabled) {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+.boton-icono:disabled {
+  opacity: 0.35;
+}
+
+.boton-agregar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1px dashed var(--border-strong);
+  border-radius: 0.75rem;
+  padding: 0.5rem 0.9rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--primary);
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+
+.boton-agregar:hover:not(:disabled) {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.chip {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  transition:
+    border-color 0.15s,
+    color 0.15s;
+}
+
+.chip:hover:not(:disabled) {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+fieldset:disabled .boton-agregar,
+fieldset:disabled .chip,
+fieldset:disabled .solo-edicion {
+  display: none;
+}

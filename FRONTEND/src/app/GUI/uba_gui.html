@@ -1,0 +1,83 @@
+<div class="space-y-6">
+
+  <!-- Bienvenida -->
+  <section class="overflow-hidden rounded-2xl bg-gradient-to-br from-[#0b1220] via-[var(--mdmq-azul)] to-[var(--mdmq-celeste)] p-6 text-white sm:p-8">
+    <p class="text-sm text-white/70">{{ saludo() }},</p>
+
+    <h1 class="mt-1 text-2xl font-extrabold tracking-tight sm:text-3xl">
+      {{ usuario()?.nombre }} {{ usuario()?.apellido }}
+    </h1>
+
+    <p class="mt-2 max-w-xl text-sm leading-6 text-white/70">
+      @switch (rol()) {
+        @case ('ADMIN') {
+          Tienes acceso completo: gestión de cuentas, asignación de técnicos y
+          seguimiento de toda la operación.
+        }
+        @case ('TECNICO') {
+          Aquí ves los trámites que tienes asignados y registras las
+          inspecciones de campo.
+        }
+        @default {
+          Puedes registrar denuncias y consultar su seguimiento.
+        }
+      }
+    </p>
+  </section>
+
+  <!-- Estado de la operacion: solo para quien la gestiona -->
+  @if (verOperacion()) {
+    <section>
+      <h2 class="mb-3 text-sm font-bold uppercase tracking-wider text-[var(--muted)]">
+        Estado de la operación
+      </h2>
+
+      <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
+          <p class="text-2xl font-extrabold text-[var(--text)]">{{ resumen().total }}</p>
+          <p class="text-sm text-[var(--muted)]">Trámites totales</p>
+        </div>
+
+        <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
+          <p class="text-2xl font-extrabold text-amber-600">{{ resumen().pendientes }}</p>
+          <p class="text-sm text-[var(--muted)]">Sin técnico</p>
+        </div>
+
+        <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
+          <p class="text-2xl font-extrabold text-sky-600">{{ resumen().asignados }}</p>
+          <p class="text-sm text-[var(--muted)]">Esperando inspección</p>
+        </div>
+
+        <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
+          <p class="text-2xl font-extrabold text-emerald-600">{{ resumen().inspeccionados }}</p>
+          <p class="text-sm text-[var(--muted)]">Inspeccionados</p>
+        </div>
+      </div>
+    </section>
+  }
+
+  <!-- Accesos -->
+  <section>
+    <h2 class="mb-3 text-sm font-bold uppercase tracking-wider text-[var(--muted)]">
+      Accesos directos
+    </h2>
+
+    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      @for (a of accesos(); track a.ruta) {
+        <button type="button" (click)="ir(a.ruta)"
+          class="group flex items-start gap-4 rounded-2xl border border-[var(--border)] bg-[var(--surface)]
+                 p-5 text-left transition hover:border-[var(--primary)] hover:shadow-md">
+
+          <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl" [class]="a.color">
+            <i class="fa-solid {{ a.icono }}"></i>
+          </div>
+
+          <div class="min-w-0">
+            <p class="font-bold text-[var(--text)] group-hover:text-[var(--primary)]">{{ a.titulo }}</p>
+            <p class="mt-0.5 text-sm text-[var(--muted)]">{{ a.descripcion }}</p>
+          </div>
+        </button>
+      }
+    </div>
+  </section>
+</div>

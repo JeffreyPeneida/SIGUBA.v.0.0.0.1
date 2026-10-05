@@ -1,0 +1,713 @@
+/* Convertido del tema oscuro original a la paleta comun de SIGUBA.
+   Los colores se mapearon por su papel (fondo, superficie, texto,
+   marca), no por parecido de tono. */
+
+/* El selector universal ponia la fuente en TODO, incluidos los <i> de
+   FontAwesome, que se dibujaban como cuadrados vacios. Se excluyen los
+   iconos y se deja la tipografia al resto. */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+*:not(.fa):not(.fa-solid):not(.fa-regular):not(.fa-brands):not([class*="fa-"]) {
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+}
+
+/* ── FONDO GENERAL ── */
+.background {
+  width: 100%;
+  min-height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0;
+  background: var(--background);
+}
+
+/* ── CONTENEDOR ── */
+.container {
+  width: 100%;
+  max-width: 1500px;
+  padding: 40px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgb(15 23 42 / 0.08);
+}
+
+/* ── HEADER DENUNCIA ── */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 35px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+
+  .header-titulo,
+  .header-acciones {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+  }
+
+  .btn-atras,
+  .btn-ayuda {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    height: 2.25rem;
+    padding: 0 0.875rem;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s, border-color .2s, color .2s;
+  }
+
+  .btn-atras:hover {
+    background: var(--surface-muted);
+  }
+
+  .btn-ayuda {
+    border-color: color-mix(in srgb, var(--primary) 35%, transparent);
+    background: var(--primary-soft);
+    color: var(--primary);
+  }
+
+  .btn-ayuda:hover {
+    background: color-mix(in srgb, var(--primary) 18%, transparent);
+  }
+
+  h1 {
+    color: var(--text);
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+  }
+
+  .codigo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    color: var(--primary);
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+}
+
+.tecnico-row {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 28px;
+
+  strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+}
+
+/* ── LAYOUT DOS COLUMNAS ── */
+.contenido {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  margin-bottom: 28px;
+}
+
+.columna {
+  flex: 1;
+  min-width: 350px;
+}
+
+/* ── CAMPOS SOLO LECTURA ── */
+.campo-lectura {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 18px;
+
+  label {
+    min-width: 140px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    padding-top: 3px;
+    flex-shrink: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  span {
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 400;
+    word-break: break-word;
+    line-height: 1.5;
+  }
+
+  &.narr span {
+    max-height: 80px;
+    overflow-y: auto;
+    display: block;
+  }
+}
+
+/* ── MAPA E IMÁGENES DENUNCIA ── */
+.img-section {
+  display: flex;
+  gap: 32px;
+  margin: 28px 0;
+
+  .img-group {
+    flex: 1;
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+    }
+
+    .img-box {
+      width: 100%;
+      height: 180px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      overflow: hidden;
+
+      img {
+        height: 80px;
+        border-radius: 8px;
+        /* La evidencia se ve entera: recortarla escondia justo lo denunciado. */
+        object-fit: contain;
+      }
+    }
+  }
+}
+
+/* ── SEPARADOR ── */
+.separador {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 32px 0;
+}
+
+/* ── HEADER INSPECCIÓN ── */
+.header-inspeccion {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+
+  h2 {
+    color: var(--text);
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+  }
+
+  span {
+    color: var(--primary);
+    font-size: 13px;
+    font-weight: 600;
+  }
+}
+
+/* ── CAMPOS EDITABLES ── */
+.campo {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 22px;
+
+  label {
+    margin-bottom: 8px;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 500;
+  }
+}
+
+input[type="text"],
+input[type="time"],
+select,
+textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 14px;
+  transition: border-color .25s, background .25s;
+
+  &:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: var(--surface);
+  }
+}
+
+select option {
+  background: var(--surface-muted);
+  color: var(--text);
+}
+
+textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+.valor-asignacion {
+  color: var(--text);
+  font-size: 14px;
+  padding: 14px 0;
+}
+
+/* ── ZONA DE CARGA ── */
+.campo-imagenes label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  .opcional {
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+    background: var(--surface-muted);
+    color: var(--muted);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+}
+
+/* Antes era un boton plano: no se leia como zona de carga ni delataba que
+   tambien acepta arrastrar archivos. */
+.zona-carga {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  width: 100%;
+  padding: 1.75rem 1rem;
+  border: 2px dashed var(--border);
+  border-radius: 1rem;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  text-align: center;
+  transition: border-color .2s, background .2s, transform .2s;
+
+  &:hover:not(:disabled),
+  &.arrastrando {
+    border-color: var(--primary);
+    background: var(--primary-soft);
+    transform: translateY(-2px);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+  }
+
+  > i {
+    font-size: 1.75rem;
+    color: var(--primary);
+  }
+
+  .zona-titulo {
+    font-size: 0.9375rem;
+    font-weight: 700;
+  }
+
+  .zona-pista {
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  .zona-conteo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-top: 0.25rem;
+    color: var(--success, #16a34a);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+}
+
+/* ── BARRA DE PROGRESO ── */
+.progreso {
+  margin-top: 0.75rem;
+
+  .progreso-barra {
+    height: 0.5rem;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--surface-muted);
+  }
+
+  .progreso-relleno {
+    height: 100%;
+    border-radius: 999px;
+    background: var(--primary);
+    transition: width .2s ease;
+  }
+
+  .progreso-texto {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0.375rem 0 0;
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+}
+
+/* ── PREVIEW IMÁGENES ── */
+.preview-imagen {
+  width: 100%;
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 16px;
+  align-items: start;
+  padding: 16px;
+  border-radius: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  margin-bottom: 22px;
+
+  &.vacia {
+    display: block;
+    padding: 1.75rem 1rem;
+  }
+
+  .preview-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+
+    i {
+      font-size: 1.5rem;
+      opacity: 0.5;
+    }
+  }
+
+  .preview-item {
+    position: relative;
+    margin: 0;
+    overflow: hidden;
+    border-radius: 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+
+    /* La foto se ve entera: recortarla escondia justo el foco de la plaga. */
+    .preview-lienzo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 140px;
+      background: var(--surface-muted);
+      color: var(--muted);
+    }
+
+    img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    figcaption {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.5rem 0.625rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .preview-nombre {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .preview-peso {
+      flex: none;
+      font-size: 0.6875rem;
+      color: var(--muted);
+    }
+
+    .preview-quitar {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      width: 1.75rem;
+      height: 1.75rem;
+      display: grid;
+      place-items: center;
+      border: none;
+      border-radius: 999px;
+      background: rgb(15 23 42 / 0.6);
+      color: #fff;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: background .2s;
+
+      &:hover { background: var(--danger, #dc2626); }
+    }
+  }
+}
+
+/* ── TABS ── */
+.tabs-container {
+  margin: 28px 0;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.tab-buttons {
+  display: flex;
+
+  .tab-btn {
+    flex: 1;
+    padding: 14px;
+    border: none;
+    background: var(--surface);
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border-right: 1px solid var(--border);
+    transition: background .25s, color .25s;
+
+    &:last-child { border-right: none; }
+
+    &.active {
+      background: rgba(45, 107, 255, .15);
+      color: var(--primary);
+    }
+
+    &:hover:not(.active) {
+      background: var(--surface);
+      color: var(--text);
+    }
+  }
+}
+
+.tab-panel {
+  padding: 24px;
+  background: var(--surface);
+}
+
+/* ── CHECKBOXES ── */
+.check-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text);
+    cursor: pointer;
+  }
+
+  input[type="checkbox"] {
+    width: auto;
+    padding: 0;
+    border-radius: 4px;
+    accent-color: var(--primary);
+    cursor: pointer;
+  }
+
+  input[type="text"] {
+    width: 140px;
+    height: 36px;
+    padding: 6px 12px;
+    border-radius: 10px;
+    font-size: 13px;
+  }
+}
+
+.ev-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 80px;
+}
+
+.nivel-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 16px 0 8px;
+}
+
+/* ── BOTONES FINALES ── */
+.botones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 40px;
+  padding-top: 25px;
+  border-top: 1px solid var(--border);
+
+  button {
+    height: 52px;
+    border-radius: 16px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .25s, transform .25s;
+  }
+
+  .btn-volver {
+    min-width: 180px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+
+    &:hover {
+      background: var(--surface);
+      transform: translateY(-2px);
+    }
+  }
+
+  .btn-guardar {
+    min-width: 220px;
+    border: none;
+    background: var(--primary);
+    color: white;
+
+    &:hover:not(:disabled) {
+      background: #3D79FF;
+      transform: translateY(-2px);
+    }
+
+    &:disabled {
+      background: rgba(45, 107, 255, .4);
+      cursor: not-allowed;
+    }
+  }
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar-thumb { background: var(--surface-muted); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, .25); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .background { padding: 25px; }
+  .container { padding: 30px; }
+  .contenido { flex-direction: column; gap: 30px; }
+  .header, .header-inspeccion { flex-direction: column; gap: 16px; text-align: center; }
+  .img-section { flex-direction: column; }
+  .botones { flex-direction: column; }
+  .btn-volver, .btn-guardar { width: 100%; }
+}
+
+/* Mapa de la ficha: necesita alto explicito o Leaflet no dibuja nada. */
+.mapa-detalle {
+  min-height: 220px;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 0.75rem;
+}
+
+.sin-mapa {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+/* ==========================================================================
+   Campos resaltados
+
+   Con borde #e2e8f0 sobre fondo casi blanco los campos se confundian con la
+   tarjeta y costaba ver donde escribir. Borde mas firme, sombra leve, y un
+   anillo claro al enfocar. El icono de la etiqueta dice que se pide antes de
+   leer el texto.
+   ========================================================================== */
+
+.campo > label,
+.campo-lectura > label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.campo > label > i:first-child,
+.campo-lectura > label > i:first-child {
+  width: 1rem;
+  font-size: 13px;
+  text-align: center;
+  color: var(--primary);
+}
+
+.campo > input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.campo > textarea {
+  border: 1.5px solid var(--border-strong);
+  background: var(--surface);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.campo > input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):hover,
+.campo > textarea:hover {
+  border-color: #94a3b8;
+}
+
+.campo > input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):focus,
+.campo > textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 14%, transparent);
+}
+
+.campo:not(.campo-invalido):focus-within > label {
+  color: var(--primary);
+}

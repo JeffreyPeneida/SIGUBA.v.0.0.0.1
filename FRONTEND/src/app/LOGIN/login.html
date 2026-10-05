@@ -1,0 +1,231 @@
+<div class="relative min-h-screen w-full overflow-hidden bg-[var(--background)] text-[var(--text)]">
+
+  <!-- Decoraciones del fondo, solo en pantallas pequenas -->
+  <div class="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-[var(--mdmq-celeste)]/10 blur-3xl lg:hidden"></div>
+  <div class="pointer-events-none absolute -bottom-32 -left-32 h-96 w-96 rounded-full bg-[var(--mdmq-azul)]/10 blur-3xl lg:hidden"></div>
+
+  <main class="relative grid min-h-screen lg:grid-cols-[1.08fr_0.92fr]">
+
+    <!-- ================================================================= -->
+    <!-- PANEL IZQUIERDO: identidad                                        -->
+    <!-- ================================================================= -->
+    <section
+      class="relative hidden min-h-screen overflow-hidden bg-gradient-to-br
+             from-[#0b1220] via-[var(--mdmq-azul)] to-[var(--mdmq-celeste)]
+             px-12 py-10 text-white lg:flex lg:flex-col xl:px-20 xl:py-14"
+    >
+      <div class="pointer-events-none absolute -left-32 top-1/3 h-96 w-96 rounded-full bg-sky-400/20 blur-3xl"></div>
+      <div class="pointer-events-none absolute -right-32 -top-28 h-[430px] w-[430px] rounded-full bg-white/10 blur-3xl"></div>
+      <div class="pointer-events-none absolute bottom-0 right-0 h-80 w-80 rounded-full bg-cyan-300/10 blur-3xl"></div>
+
+      <header class="relative z-10 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/20 bg-white/10 shadow-lg backdrop-blur">
+            <i class="fa-solid fa-shield-dog text-lg text-sky-300"></i>
+          </div>
+
+          <div>
+            <p class="text-lg font-extrabold tracking-wide">SIGUBA</p>
+            <p class="text-xs text-white/65">Unidad de Bienestar Animal</p>
+          </div>
+        </div>
+
+        <div class="rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-medium text-white/80 backdrop-blur">
+          <span class="mr-2 inline-block h-2 w-2 animate-pulse rounded-full bg-emerald-400"></span>
+          Sistema activo
+        </div>
+      </header>
+
+      <div class="relative z-10 flex flex-1 flex-col justify-center py-10 xl:py-14">
+        <div class="mb-8 max-w-xl">
+          <div class="mb-5 inline-flex items-center gap-2 rounded-full border border-sky-400/30 bg-sky-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-sky-200">
+            <i class="fa-solid fa-bug"></i>
+            Control de plagas urbanas
+          </div>
+
+          <h1 class="text-4xl font-extrabold leading-tight tracking-tight xl:text-5xl">
+            Vigilancia sanitaria
+            <span class="block text-sky-300">para todo el Distrito.</span>
+          </h1>
+
+          <p class="mt-5 max-w-lg text-base leading-7 text-white/70">
+            Registra denuncias, asigna técnicos y da seguimiento a las
+            inspecciones desde una sola plataforma.
+          </p>
+        </div>
+
+        <dl class="grid max-w-lg grid-cols-3 gap-4">
+          <div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur">
+            <dt class="text-2xl font-extrabold text-sky-300">10</dt>
+            <dd class="text-xs text-white/60">Administraciones zonales</dd>
+          </div>
+          <div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur">
+            <dt class="text-2xl font-extrabold text-sky-300">66</dt>
+            <dd class="text-xs text-white/60">Parroquias</dd>
+          </div>
+          <div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur">
+            <dt class="text-2xl font-extrabold text-sky-300">2.149</dt>
+            <dd class="text-xs text-white/60">Barrios</dd>
+          </div>
+        </dl>
+      </div>
+
+      <footer class="relative z-10 flex items-center justify-between text-xs text-white/45">
+        <span>© {{ anio }} Municipio del Distrito Metropolitano de Quito</span>
+        <span class="flex items-center gap-2">
+          <i class="fa-solid fa-shield-halved"></i>
+          Acceso seguro
+        </span>
+      </footer>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- PANEL DERECHO: formulario                                         -->
+    <!-- ================================================================= -->
+    <section class="relative flex min-h-screen items-center justify-center bg-[var(--surface)] px-5 py-8 sm:px-10 lg:px-12 xl:px-20">
+
+      <div class="pointer-events-none absolute right-0 top-0 hidden h-72 w-72 rounded-full bg-[var(--mdmq-celeste)]/5 blur-3xl lg:block"></div>
+
+      <div class="relative z-10 w-full max-w-[440px]">
+
+        <!-- Identificador visible solo cuando el panel izquierdo esta oculto -->
+        <div class="mb-10 flex items-center gap-3 lg:hidden">
+          <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--mdmq-azul)]">
+            <i class="fa-solid fa-shield-dog text-lg text-sky-300"></i>
+          </div>
+          <div>
+            <p class="text-base font-extrabold text-[var(--text)]">SIGUBA</p>
+            <p class="text-xs text-[var(--muted)]">Unidad de Bienestar Animal</p>
+          </div>
+        </div>
+
+        <div class="mb-8">
+          <div class="mb-4 inline-flex items-center gap-2 rounded-full bg-[var(--primary-soft)] px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-[var(--primary)]">
+            <span class="h-1.5 w-1.5 rounded-full bg-[var(--primary)]"></span>
+            Acceso al sistema
+          </div>
+
+          <h1 class="text-3xl font-extrabold tracking-tight text-[var(--text)] sm:text-4xl">
+            Bienvenido
+          </h1>
+
+          <p class="mt-3 text-sm leading-6 text-[var(--muted)]">
+            Ingresa tus credenciales para acceder al panel de gestión.
+          </p>
+        </div>
+
+        <form [formGroup]="formLogin" (ngSubmit)="iniciarSesion()" class="space-y-5" novalidate>
+
+          <!-- Usuario -->
+          <div>
+            <label for="usuario" class="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700">
+              <i class="fa-solid fa-circle-user text-xs text-[var(--muted)]"></i>
+              Usuario
+            </label>
+
+            <div class="relative">
+              <i class="fa-regular fa-user icono-campo"></i>
+
+              <input
+                id="usuario"
+                formControlName="usuario"
+                type="text"
+                autocomplete="username"
+                placeholder="Ingresa tu nombre de usuario"
+                class="entrada con-icono !h-14 !rounded-2xl"
+                [class.campo-error]="invalido('usuario')"
+              />
+            </div>
+
+            @if (invalido('usuario')) {
+              <p class="mt-2 flex items-center gap-1.5 text-xs font-medium text-[var(--danger)]">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                El usuario es obligatorio (mínimo 3 caracteres).
+              </p>
+            }
+          </div>
+
+          <!-- Contrasena -->
+          <div>
+            <label for="password" class="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700">
+              <i class="fa-solid fa-key text-xs text-[var(--muted)]"></i>
+              Contraseña
+            </label>
+
+            <div class="relative">
+              <i class="fa-solid fa-lock icono-campo"></i>
+
+              <input
+                id="password"
+                formControlName="password"
+                [type]="mostrarPassword() ? 'text' : 'password'"
+                autocomplete="current-password"
+                placeholder="Ingresa tu contraseña"
+                class="entrada con-icono con-accion !h-14 !rounded-2xl"
+                [class.campo-error]="invalido('password')"
+              />
+
+              <button
+                type="button"
+                (click)="alternarPassword()"
+                [attr.aria-label]="mostrarPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+                class="accion-campo"
+              >
+                <i class="fa-solid" [class.fa-eye]="!mostrarPassword()" [class.fa-eye-slash]="mostrarPassword()"></i>
+              </button>
+            </div>
+
+            @if (invalido('password')) {
+              <p class="mt-2 flex items-center gap-1.5 text-xs font-medium text-[var(--danger)]">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                La contraseña es obligatoria (mínimo 6 caracteres).
+              </p>
+            }
+          </div>
+
+          <!-- Error de autenticacion -->
+          @if (error()) {
+            <div
+              role="alert"
+              class="flex items-start gap-3 rounded-2xl border border-red-200 bg-[var(--danger-soft)] px-4 py-3"
+            >
+              <i class="fa-solid fa-triangle-exclamation mt-0.5 text-[var(--danger)]"></i>
+              <p class="text-sm font-medium text-[var(--danger)]">{{ error() }}</p>
+            </div>
+          }
+
+          <button
+            type="submit"
+            [disabled]="cargando()"
+            class="flex h-14 w-full items-center justify-center gap-2 rounded-2xl
+                   bg-[var(--primary)] text-sm font-bold uppercase tracking-wide text-white
+                   shadow-lg shadow-[var(--primary)]/20 transition
+                   hover:bg-[var(--primary-dark)] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            @if (cargando()) {
+              <i class="fa-solid fa-circle-notch fa-spin"></i>
+              Ingresando…
+            } @else {
+              <i class="fa-solid fa-arrow-right-to-bracket"></i>
+              Iniciar sesión
+            }
+          </button>
+
+          <button
+            type="button"
+            (click)="registrarUsuario()"
+            class="flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-[var(--border)]
+                   text-sm font-semibold text-[var(--text)] transition hover:border-[var(--primary)] hover:text-[var(--primary)]"
+          >
+            <i class="fa-solid fa-user-plus"></i>
+            Registrar usuario
+          </button>
+        </form>
+
+        <p class="mt-8 text-center text-xs text-[var(--muted)]">
+          ¿Problemas para ingresar? Contacta al administrador del sistema.
+        </p>
+      </div>
+    </section>
+  </main>
+</div>
